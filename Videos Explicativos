@@ -1,0 +1,23 @@
+
+# Guiones para videos explicativos (máx 5 min c/u)
+
+## Normas
+Explicación de ISO/IEC 25010, ISO/IEC 9126 y IEEE 829. Beneficios: calidad, confiabilidad, estandarización.
+
+## Modelos
+CMMI, TMMi. Cómo ayudan a mejorar procesos y madurez de desarrollo de software.
+
+## Estándares
+Buenas prácticas de codificación, naming conventions, control de versiones. Beneficios de consistencia y legibilidad.
+
+## Código y programación
+Revisión de código, pair programming, linters. Impacto en mantenibilidad y reducción de errores.
+
+## Pruebas
+Unitarias, integración, sistema, aceptación y usabilidad. Importancia de detectar errores tempranos.
+
+## Conclusiones
+Resumen de buenas prácticas y adopción de métricas para evaluar calidad.
+
+## Recomendaciones
+Automatizar pruebas, capacitación docente-desarrollador, despliegue seguro y continuo.
