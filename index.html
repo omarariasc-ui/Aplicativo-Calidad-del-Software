@@ -3,206 +3,278 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Aplicativo - Calidad del Software (Omar Arias, CUN)</title>
+  <title>Evaluación de Calidad de Software</title>
   <meta name="description" content="Aplicativo interactivo para evaluar la calidad del software. Modelo basado en ISO/IEC 25010.">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    .card { background: white; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
-    .metric-input { width: 100%; }
-    pre { white-space: pre-wrap; }
+    :root{--bg:#0b1220;--card:#0f1724;--muted:#9aa4b2;--accent:#7c3aed;--accent-2:#06b6d4}
+    *{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071021 0%,#0b1220 40%);color:#e6eef8}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6);}
+    .glass{backdrop-filter: blur(6px);}
+    .btn{transition:transform .12s ease, box-shadow .12s ease}
+    .btn:active{transform:translateY(1px)}
+    .metric-input{width:100%;background:transparent;border:1px solid rgba(255,255,255,0.06);padding:.5rem;border-radius:8px;color:#e6eef8}
+    .small-muted{color:var(--muted)}
+    .progress-bg{background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border-radius:999px}
+    .glow{box-shadow:0 6px 28px rgba(124,58,237,0.12), 0 2px 6px rgba(6,182,212,0.06)}
+    .fade-up{opacity:0;transform:translateY(12px);animation:fadeUp .6s forwards}
+    @keyframes fadeUp{to{opacity:1;transform:none}}
+    iframe{border-radius:8px}
   </style>
-  <!-- Chart.js for radar chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 leading-relaxed">
-  <header class="bg-white border-b py-4 sticky top-0 z-20">
-    <div class="container mx-auto px-6 flex items-center justify-between">
-      <h1 class="text-xl font-bold">Aplicativo: Calidad del Software</h1>
-      <nav class="flex gap-3 text-sm">
-        <a href="#normas" class="hover:underline">Normas</a>
-        <a href="#modelos" class="hover:underline">Modelos</a>
-        <a href="#estandares" class="hover:underline">Estándares</a>
-        <a href="#codigo" class="hover:underline">Código</a>
-        <a href="#pruebas" class="hover:underline">Pruebas</a>
-        <a href="#conclusiones" class="hover:underline">Conclusiones</a>
-        <a href="#recomendaciones" class="hover:underline">Recomend.</a>
-      </nav>
+<body>
+  <header class="sticky top-4 z-30">
+    <div class="container mx-auto px-6">
+      <div class="flex items-center justify-between py-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-400 flex items-center justify-center shadow-lg"> <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h1 class="text-xl font-semibold">Evaluación de Calidad de Software</h1>
+        </div>
+        <nav class="hidden md:flex gap-4 text-sm small-muted">
+          <a href="#normas" class="hover:text-white">Normas</a>
+          <a href="#modelos" class="hover:text-white">Modelos</a>
+          <a href="#estandares" class="hover:text-white">Estándares</a>
+          <a href="#codigo" class="hover:text-white">Código</a>
+          <a href="#pruebas" class="hover:text-white">Pruebas</a>
+          <a href="#conclusiones" class="hover:text-white">Conclusiones</a>
+          <a href="#recomendaciones" class="hover:text-white">Recomend.</a>
+        </nav>
+      </div>
     </div>
   </header>
 
-  <main class="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
-    <!-- Left: summary & links -->
-    <aside class="lg:col-span-1 card p-6">
-      <h2 class="text-lg font-semibold mb-2">Resumen</h2>
-      <p class="text-sm text-slate-600 mb-3">Herramienta interactiva que implementa un modelo métrico para evaluar la calidad del software en 8 dimensiones (ISO/IEC 25010 adaptado). Introduce sub-métricas y obtén una nota 0–5.</p>
-      <p class="text-sm"><strong>Autor:</strong> Omar Arias</p>
-      <p class="text-sm"><strong>Institución:</strong> Corporación Unificada Nacional de Educación Superior (CUN)</p>
-      <hr class="my-4" />
-      <h3 class="font-semibold">Acciones rápidas</h3>
-      <ul class="text-sm list-disc list-inside mt-2 text-slate-600">
-        <li>Rellena las sub-métricas en el formulario.</li>
-        <li>Presiona <strong>Calcular</strong> para ver la nota y el radar.</li>
-        <li>Descarga resultados con <strong>Exportar JSON</strong>.</li>
-      </ul>
-      <hr class="my-4" />
-      <button id="resetBtn" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">Restablecer valores</button>
-    </aside>
+  <main class="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <section class="lg:col-span-4 card p-6 glass fade-up">
+      <h2 class="text-lg font-semibold">Inicio</h2>
+      <p class="small-muted mt-2">Herramienta interactiva que implementa un modelo métrico para evaluar la calidad del software en 8 dimensiones (ISO/IEC 25010 adaptado). Introduce sub-métricas y obtén una nota 0–5.</p>
 
-    <!-- Center-left: inputs -->
-    <section class="lg:col-span-2 card p-6">
-      <h2 class="text-lg font-semibold mb-2">Entradas: Sub-métricas</h2>
-      <p class="text-sm text-slate-600 mb-4">Rellena los valores. Los campos en % aceptan 0–100.</p>
-      <form id="metricsForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- (inputs same as before) -->
+      <div class="mt-4">
+        <div class="text-sm small-muted">Acciones</div>
+        <div class="mt-3 flex gap-2">
+          <button id="startBtn" class="btn bg-gradient-to-r from-purple-600 to-cyan-400 px-4 py-2 rounded text-sm font-medium text-black glow">Iniciar evaluación</button>
+          <button id="resetBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm text-white">Restablecer</button>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h4 class="text-sm font-medium">Nota final</h4>
+        <div class="mt-2 progress-bg p-1 rounded-lg">
+          <div id="scoreBar" class="h-8 rounded-lg flex items-center px-4" style="width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));">
+            <div id="scoreText" class="text-sm font-semibold">—</div>
+          </div>
+        </div>
+        <div id="scoreLabel" class="mt-2 small-muted">Interpretación: —</div>
+      </div>
+
+      <div class="mt-6">
+        <h4 class="text-sm font-medium">Exportar</h4>
+        <p class="text-xs small-muted mt-1">Descarga los inputs y resultados en JSON</p>
+        <div class="mt-2">
+          <button id="exportBtn" class="btn bg-white/5 px-3 py-2 rounded text-sm">Exportar JSON</button>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="lg:col-span-5 card p-6 glass fade-up">
+      <h2 class="text-lg font-semibold">Entradas</h2>
+      <p class="small-muted mt-2">Rellena las sub-métricas; los campos en % aceptan 0–100.</p>
+
+      <form id="metricsForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <!-- inputs same as before but styled -->
         <div>
-          <h4 class="font-medium">Funcionalidad</h4>
-          <label class="block text-xs text-slate-500">Cobertura de requisitos (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="f_req" type="number" min="0" max="100" value="90" />
-          <label class="block text-xs text-slate-500 mt-2">Tests funcionales pasados (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="f_tests" type="number" min="0" max="100" value="92" />
+          <label class="text-xs small-muted">Cobertura de requisitos (%)</label>
+          <input class="metric-input mt-1" id="f_req" type="number" min="0" max="100" value="90" />
+          <label class="text-xs small-muted mt-2 block">Tests funcionales pasados (%)</label>
+          <input class="metric-input mt-1" id="f_tests" type="number" min="0" max="100" value="92" />
         </div>
 
         <div>
-          <h4 class="font-medium">Fiabilidad</h4>
-          <label class="block text-xs text-slate-500">Fallos por 100 horas (número)</label>
-          <input class="metric-input border rounded px-3 py-2" id="r_faults" type="number" min="0" value="2" />
-          <label class="block text-xs text-slate-500 mt-2">MTTR (horas)</label>
-          <input class="metric-input border rounded px-3 py-2" id="r_mttr" type="number" step="0.1" min="0" value="1.2" />
+          <label class="text-xs small-muted">Fallos por 100 horas (número)</label>
+          <input class="metric-input mt-1" id="r_faults" type="number" min="0" value="2" />
+          <label class="text-xs small-muted mt-2 block">MTTR (horas)</label>
+          <input class="metric-input mt-1" id="r_mttr" type="number" step="0.1" min="0" value="1.2" />
         </div>
 
         <div>
-          <h4 class="font-medium">Usabilidad</h4>
-          <label class="block text-xs text-slate-500">SUS (0–100)</label>
-          <input class="metric-input border rounded px-3 py-2" id="u_sus" type="number" min="0" max="100" value="78" />
-          <label class="block text-xs text-slate-500 mt-2">Tiempo medio de tarea (segundos)</label>
-          <input class="metric-input border rounded px-3 py-2" id="u_time" type="number" min="0" value="35" />
+          <label class="text-xs small-muted">SUS (0–100)</label>
+          <input class="metric-input mt-1" id="u_sus" type="number" min="0" max="100" value="78" />
+          <label class="text-xs small-muted mt-2 block">Tiempo medio de tarea (segundos)</label>
+          <input class="metric-input mt-1" id="u_time" type="number" min="0" value="35" />
         </div>
 
         <div>
-          <h4 class="font-medium">Eficiencia</h4>
-          <label class="block text-xs text-slate-500">Tiempo respuesta medio (ms)</label>
-          <input class="metric-input border rounded px-3 py-2" id="e_resp" type="number" min="0" value="450" />
-          <label class="block text-xs text-slate-500 mt-2">Uso recursos (0–100)</label>
-          <input class="metric-input border rounded px-3 py-2" id="e_res" type="number" min="0" max="100" value="80" />
+          <label class="text-xs small-muted">Tiempo respuesta medio (ms)</label>
+          <input class="metric-input mt-1" id="e_resp" type="number" min="0" value="450" />
+          <label class="text-xs small-muted mt-2 block">Uso recursos (0–100)</label>
+          <input class="metric-input mt-1" id="e_res" type="number" min="0" max="100" value="80" />
         </div>
 
         <div>
-          <h4 class="font-medium">Mantenibilidad</h4>
-          <label class="block text-xs text-slate-500">Cobertura unit tests (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="m_cov" type="number" min="0" max="100" value="65" />
-          <label class="block text-xs text-slate-500 mt-2">Complejidad ciclomática media</label>
-          <input class="metric-input border rounded px-3 py-2" id="m_cyc" type="number" step="0.1" min="0" value="3.2" />
+          <label class="text-xs small-muted">Cobertura unit tests (%)</label>
+          <input class="metric-input mt-1" id="m_cov" type="number" min="0" max="100" value="65" />
+          <label class="text-xs small-muted mt-2 block">Complejidad ciclomática media</label>
+          <input class="metric-input mt-1" id="m_cyc" type="number" step="0.1" min="0" value="3.2" />
         </div>
 
         <div>
-          <h4 class="font-medium">Portabilidad</h4>
-          <label class="block text-xs text-slate-500">Plataformas soportadas (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="p_plat" type="number" min="0" max="100" value="80" />
-          <label class="block text-xs text-slate-500 mt-2">Facilidad despliegue (0–100)</label>
-          <input class="metric-input border rounded px-3 py-2" id="p_deploy" type="number" min="0" max="100" value="85" />
+          <label class="text-xs small-muted">Plataformas soportadas (%)</label>
+          <input class="metric-input mt-1" id="p_plat" type="number" min="0" max="100" value="80" />
+          <label class="text-xs small-muted mt-2 block">Facilidad despliegue (0–100)</label>
+          <input class="metric-input mt-1" id="p_deploy" type="number" min="0" max="100" value="85" />
         </div>
 
         <div>
-          <h4 class="font-medium">Seguridad</h4>
-          <label class="block text-xs text-slate-500">Vulnerabilidades críticas (número)</label>
-          <input class="metric-input border rounded px-3 py-2" id="s_vuln" type="number" min="0" value="0" />
-          <label class="block text-xs text-slate-500 mt-2">Checklist implementado (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="s_check" type="number" min="0" max="100" value="80" />
+          <label class="text-xs small-muted">Vulnerabilidades críticas (número)</label>
+          <input class="metric-input mt-1" id="s_vuln" type="number" min="0" value="0" />
+          <label class="text-xs small-muted mt-2 block">Checklist implementado (%)</label>
+          <input class="metric-input mt-1" id="s_check" type="number" min="0" max="100" value="80" />
         </div>
 
         <div>
-          <h4 class="font-medium">Compatibilidad / Interoperabilidad</h4>
-          <label class="block text-xs text-slate-500">APIs conformes (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="c_api" type="number" min="0" max="100" value="95" />
-          <label class="block text-xs text-slate-500 mt-2">Tests integración (%)</label>
-          <input class="metric-input border rounded px-3 py-2" id="c_int" type="number" min="0" max="100" value="90" />
+          <label class="text-xs small-muted">APIs conformes (%)</label>
+          <input class="metric-input mt-1" id="c_api" type="number" min="0" max="100" value="95" />
+          <label class="text-xs small-muted mt-2 block">Tests integración (%)</label>
+          <input class="metric-input mt-1" id="c_int" type="number" min="0" max="100" value="90" />
         </div>
 
       </form>
 
-      <div class="flex gap-2 mt-4">
-        <button id="calcBtn" type="button" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Calcular</button>
-        <button id="exportBtn" type="button" class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">Exportar JSON</button>
+      <div class="mt-4 flex gap-2">
+        <button id="calcBtn" class="btn bg-gradient-to-r from-purple-600 to-cyan-400 px-4 py-2 rounded text-sm font-medium glow">Calcular</button>
+        <button id="sampleBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm">Cargar ejemplo</button>
       </div>
 
-      <hr class="my-6" />
-
-      <div id="chartCard" class="card p-4">
-        <h3 class="font-semibold mb-2">Radar: Desglose por dimensión</h3>
-        <canvas id="radarChart" height="300"></canvas>
-      </div>
     </section>
 
-    <!-- Right: results & videos -->
-    <aside class="lg:col-span-1 card p-6">
-      <h2 class="text-lg font-semibold mb-2">Resultados</h2>
-      <div id="resultsArea" class="text-sm text-slate-700 space-y-3">
-        <p class="text-slate-500">Aún no se han calculado resultados.</p>
+    <aside class="lg:col-span-3 card p-6 glass fade-up">
+      <h2 class="text-lg font-semibold">Resultados y visualización</h2>
+      <div class="mt-3">
+        <canvas id="barChart" height="220"></canvas>
       </div>
-      <hr class="my-4" />
-      <h3 class="font-semibold">Nota final (0–5)</h3>
-      <div id="finalScore" class="text-4xl font-bold text-indigo-600 mt-2">—</div>
-      <div class="mt-4" id="interpretation"></div>
-
-      <hr class="my-4" />
-      <h3 class="font-semibold">Videos de ejemplo</h3>
-      <p class="text-xs text-slate-500 mb-2">Ejemplos públicos sobre calidad de software y pruebas (sustituye por tus grabaciones).</p>
-      <!-- Example YouTube embeds -->
-      <div class="space-y-3">
-        <iframe width="100%" height="150" src="https://www.youtube.com/embed/3X0iV5b8X9s" title="Software Quality - Overview" frameborder="0" allowfullscreen></iframe>
-        <iframe width="100%" height="150" src="https://www.youtube.com/embed/2zXj6Y1m7WQ" title="Software Testing Tutorial" frameborder="0" allowfullscreen></iframe>
-        <iframe width="100%" height="150" src="https://www.youtube.com/embed/9s3y6yDq3W8" title="Usability Testing" frameborder="0" allowfullscreen></iframe>
+      <div class="mt-4">
+        <h4 class="text-sm font-medium">Desglose</h4>
+        <div id="resultsArea" class="mt-2 small-muted">Aún no se han calculado resultados.</div>
       </div>
     </aside>
 
-    <!-- Full width: detailed sections -->
-    <section class="lg:col-span-4 card p-6 mt-4" id="normas">
-      <h2 class="text-xl font-semibold">Normas</h2>
-      <p class="text-sm text-slate-700 mt-2">Se incluyen referencias y descripciones cortas de las normas clave: ISO/IEC 25010 (características de calidad), ISO/IEC 27001 (seguridad de la información) y pautas de accesibilidad (WCAG). Estas normas guían la selección de dimensiones y sub-métricas.</p>
+    <!-- Detailed sections -->
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="normas">
+      <h3 class="text-xl font-semibold">Normas</h3>
+      <p class="small-muted mt-2">Se describen las normas relevantes: ISO/IEC 25010 (características de calidad), ISO/IEC 27001 (seguridad de la información), IEEE 829 (planificación de pruebas) e ISO/IEC 12207 (procesos del ciclo de vida). Estas normas respaldan las sub-métricas y la metodología empleada.</p>
+      <div class="mt-4 grid md:grid-cols-3 gap-4">
+        <div class="p-4 card">
+          <h4 class="font-semibold">ISO/IEC 25010</h4>
+          <p class="small-muted mt-2 text-sm">Define características de calidad del producto software (funcionalidad, fiabilidad, usabilidad, etc.) y es la base del modelo.</p>
+        </div>
+        <div class="p-4 card">
+          <h4 class="font-semibold">ISO/IEC 27001</h4>
+          <p class="small-muted mt-2 text-sm">Estándar para sistemas de gestión de seguridad de la información, relevante para la dimensión de seguridad.</p>
+        </div>
+        <div class="p-4 card">
+          <h4 class="font-semibold">IEEE 829 / ISO 12207</h4>
+          <p class="small-muted mt-2 text-sm">Buenas prácticas para documentación y procesos de pruebas y ciclo de vida del software.</p>
+        </div>
+      </div>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="modelos">
-      <h2 class="text-xl font-semibold">Modelos</h2>
-      <p class="text-sm text-slate-700 mt-2">El modelo métrico utilizado pondera ocho dimensiones (ver tabla). Cada dimensión se puntúa en 0–100 y la suma ponderada se convierte a 0–5 multiplicando por 0.05. Las fórmulas y mapeos lineales se implementan en el código JS del aplicativo.</p>
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="modelos">
+      <h3 class="text-xl font-semibold">Modelos</h3>
+      <p class="small-muted mt-2">El modelo usa 8 dimensiones ponderadas (tabla). Cada dimensión se puntúa 0–100 a partir de sub-métricas; la suma ponderada produce una nota 0–100 que se convierte a escala 0–5.</p>
+      <div class="overflow-x-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/6"><tr><th class="p-3 text-left">Dimensión</th><th class="p-3 text-left">Peso (%)</th></tr></thead>
+          <tbody>
+            <tr><td class="p-3">Funcionalidad</td><td class="p-3">18</td></tr>
+            <tr><td class="p-3">Fiabilidad</td><td class="p-3">15</td></tr>
+            <tr><td class="p-3">Usabilidad</td><td class="p-3">15</td></tr>
+            <tr><td class="p-3">Eficiencia</td><td class="p-3">12</td></tr>
+            <tr><td class="p-3">Mantenibilidad</td><td class="p-3">10</td></tr>
+            <tr><td class="p-3">Portabilidad</td><td class="p-3">8</td></tr>
+            <tr><td class="p-3">Seguridad</td><td class="p-3">12</td></tr>
+            <tr><td class="p-3">Compatibilidad</td><td class="p-3">10</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="estandares">
-      <h2 class="text-xl font-semibold">Estándares y buenas prácticas</h2>
-      <p class="text-sm text-slate-700 mt-2">Convenciones de código, control de versiones, pruebas automatizadas, revisión de dependencias y políticas de despliegue continuo. Recomendamos linters, cobertura mínima de pruebas y pipelines de CI/CD.</p>
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="estandares">
+      <h3 class="text-xl font-semibold">Estándares</h3>
+      <p class="small-muted mt-2">Recomendaciones prácticas: uso de linters (ESLint, Pylint), estilo de código (Clean Code, PEP8), gestión de dependencias (OWASP dependency-check) y flujo de trabajo con GitFlow y CI/CD.</p>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="codigo">
-      <h2 class="text-xl font-semibold">Código y programación</h2>
-      <p class="text-sm text-slate-700 mt-2">El proyecto utiliza HTML, TailwindCSS y JavaScript puro para la calculadora. Las funciones de puntuación están implementadas en el archivo principal (inline) para facilitar la portabilidad. Se recomienda mantener el repo actualizado y documentado.</p>
-      <p class="text-sm mt-2"><strong>Repositorio:</strong> https://github.com/omarariasc-ui/Aplicativo-Calidad-del-Software</p>
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="codigo">
+      <h3 class="text-xl font-semibold">Código y programación</h3>
+      <p class="small-muted mt-2">Ejemplo de la función que calcula la puntuación de Funcionalidad:</p>
+      <pre class="bg-white/6 p-3 rounded text-sm overflow-x-auto text-white/90">function scoreFunc(covReqPct, testsPct){
+  const covScore = Math.max(0, Math.min(100, covReqPct)) * 0.6;
+  const testsScore = Math.max(0, Math.min(100, testsPct)) * 0.4;
+  return covScore + testsScore; }</pre>
+      <p class="small-muted mt-2 text-sm">El código está documentado y es simple de portar a cualquier entorno web.</p>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="pruebas">
-      <h2 class="text-xl font-semibold">Pruebas y evaluación</h2>
-      <p class="text-sm text-slate-700 mt-2">Aquí se deben colocar tablas de resultados, logs de tests y capturas. El aplicativo permite exportar los inputs y resultados en JSON para integrar con hojas de cálculo o informes.</p>
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="pruebas">
+      <h3 class="text-xl font-semibold">Pruebas y evaluación</h3>
+      <p class="small-muted mt-2">A continuación un ejemplo de resultados de prueba aplicados a una app educativa (valores simulados):</p>
+      <div class="overflow-x-auto mt-4">
+        <table class="min-w-full text-sm">
+          <thead class="bg-white/6"><tr><th class="p-3 text-left">Dimensión</th><th class="p-3">Puntaje (0–100)</th></tr></thead>
+          <tbody>
+            <tr><td class="p-3">Funcionalidad</td><td class="p-3">90.8</td></tr>
+            <tr><td class="p-3">Fiabilidad</td><td class="p-3">60</td></tr>
+            <tr><td class="p-3">Usabilidad</td><td class="p-3">75.8</td></tr>
+            <tr><td class="p-3">Eficiencia</td><td class="p-3">82.5</td></tr>
+            <tr><td class="p-3">Mantenibilidad</td><td class="p-3">70</td></tr>
+            <tr><td class="p-3">Portabilidad</td><td class="p-3">82.5</td></tr>
+            <tr><td class="p-3">Seguridad</td><td class="p-3">92</td></tr>
+            <tr><td class="p-3">Compatibilidad</td><td class="p-3">92.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small-muted mt-3">Nota final ejemplo: <strong>4.03 / 5.00</strong></p>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="conclusiones">
-      <h2 class="text-xl font-semibold">Conclusiones</h2>
-      <p class="text-sm text-slate-700 mt-2">El modelo facilita una evaluación objetiva y reproducible. En el ejemplo inicial (EduLearn) la nota fue 4.03/5, indicando buena calidad pero con margen de mejora en fiabilidad y cobertura de pruebas.</p>
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="conclusiones">
+      <h3 class="text-xl font-semibold">Conclusiones</h3>
+      <p class="small-muted mt-2">El modelo proporciona una evaluación cuantitativa reproducible. La puntuación permite priorizar mejoras, justificar esfuerzos de pruebas y enfocar recursos en fiabilidad y cobertura de pruebas, que suelen ser los puntos más débiles en aplicativos educativos.</p>
     </section>
 
-    <section class="lg:col-span-4 card p-6 mt-4" id="recomendaciones">
-      <h2 class="text-xl font-semibold">Recomendaciones</h2>
-      <ol class="list-decimal list-inside mt-2 text-sm text-slate-700">
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="recomendaciones">
+      <h3 class="text-xl font-semibold">Recomendaciones</h3>
+      <ol class="list-decimal list-inside mt-2 small-muted">
         <li>Aumentar cobertura de pruebas unitarias a >80%.</li>
-        <li>Implementar monitoreo en producción para reducir fallos.</li>
-        <li>Realizar pruebas de usabilidad periódicas.</li>
-        <li>Fortalecer checklist de seguridad.</li>
-        <li>Automatizar despliegues y pruebas de integración.</li>
+        <li>Implementar monitoreo y alertas para reducir fallos en producción.</li>
+        <li>Programar pruebas de usabilidad trimestrales.</li>
+        <li>Automatizar revisiones de seguridad de dependencias.</li>
+        <li>Mejorar documentación y pipelines para despliegue reproducible.</li>
       </ol>
+    </section>
+
+    <!-- Videos section -->
+    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up">
+      <h3 class="text-xl font-semibold">Videos explicativos (ejemplos animados)</h3>
+      <p class="small-muted mt-2">Videos incluidos como ejemplos animados; puedes reemplazarlos por tus propias grabaciones.</p>
+      <div class="grid md:grid-cols-4 gap-4 mt-4">
+        <!-- Autoplay and muted to allow autoplay in many browsers -->
+        <iframe src="https://www.youtube.com/embed/rs9rJbIu0tE?autoplay=1&mute=1&rel=0" title="Normas de calidad" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/1k2b0b4h5KM?autoplay=1&mute=1&rel=0" title="Modelos de calidad" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/6m6s0zYv3Vg?autoplay=1&mute=1&rel=0" title="Estándares y código" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/8s9fKk3Xj2A?autoplay=1&mute=1&rel=0" title="Pruebas y evaluación" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/3X0iV5b8X9s?autoplay=1&mute=1&rel=0" title="Seguridad" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/2zXj6Y1m7WQ?autoplay=1&mute=1&rel=0" title="Usabilidad" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/9s3y6yDq3W8?autoplay=1&mute=1&rel=0" title="Mejores prácticas" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&rel=0" title="Evaluación final" allow="autoplay; encrypted-media" loading="lazy" width="100%" height="180"></iframe>
+      </div>
     </section>
 
   </main>
 
-  <footer class="text-center py-6 text-sm text-slate-500">
-    Proyecto para Corporación Unificada Nacional de Educación Superior (CUN) — Omar Arias — 2025
-  </footer>
+  <footer class="text-center py-6 small-muted">© 2025 — Evaluación de Calidad de Software</footer>
 
   <script>
     const WEIGHTS = { funcionalidad: 0.18, fiabilidad: 0.15, usabilidad: 0.15, eficiencia: 0.12, mantenibilidad: 0.10, portabilidad: 0.08, seguridad: 0.12, compatibilidad: 0.10 };
@@ -216,6 +288,19 @@
     function scoreSecurity(vulnCount, checklistPct){ let vulnScore = vulnCount<=0?100: vulnCount===1?80: vulnCount===2?60: vulnCount<=5?20:5; return vulnScore*0.6 + clamp(checklistPct,0,100)*0.4; }
     function scoreCompatibility(apiPct, intPct){ return (clamp(apiPct,0,100) + clamp(intPct,0,100))/2; }
 
+    // Bar chart
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Funcionalidad','Fiabilidad','Usabilidad','Eficiencia','Mantenibilidad','Portabilidad','Seguridad','Compatibilidad'],
+        datasets: [{ label: 'Puntaje (0–100)', data: [0,0,0,0,0,0,0,0], backgroundColor: ['#7c3aed','#06b6d4','#7c3aed','#06b6d4','#7c3aed','#06b6d4','#7c3aed','#06b6d4'] }]
+      },
+      options: { indexAxis: 'y', scales: { x: { max: 100 } }, plugins: { legend: { display: false } }, animation: { duration: 800 } }
+    });
+
+    function updateBars(values){ barChart.data.datasets[0].data = values; barChart.update(); }
+
     function calculateAll(){
       const f_req = Number(document.getElementById('f_req').value||0); const f_tests = Number(document.getElementById('f_tests').value||0);
       const r_faults = Number(document.getElementById('r_faults').value||0); const r_mttr = Number(document.getElementById('r_mttr').value||0);
@@ -224,7 +309,7 @@
       const m_cov = Number(document.getElementById('m_cov').value||0); const m_cyc = Number(document.getElementById('m_cyc').value||0);
       const p_plat = Number(document.getElementById('p_plat').value||0); const p_deploy = Number(document.getElementById('p_deploy').value||0);
       const s_vuln = Number(document.getElementById('s_vuln').value||0); const s_check = Number(document.getElementById('s_check').value||0);
-      const c_api = Number(document.getElementById('c_api').value||0); const c_int = Number(document.getElementById('c_int').value||0);
+      const c_api = Number(document.getElementById('c_api').value||0); const c_int = Number(document.getElementById('c_int')..value||0);
 
       const score_func = scoreFunc(f_req,f_tests); const score_fiab = scoreReliability(r_faults,r_mttr); const score_usab = scoreUsability(u_sus,u_time);
       const score_efic = scoreEfficiency(e_resp,e_res); const score_mant = scoreMaintainability(m_cov,m_cyc); const score_port = scorePortability(p_plat,p_deploy);
@@ -234,18 +319,23 @@
       const final0_5 = (weighted/100)*5;
 
       document.getElementById('resultsArea').innerHTML = `<div><strong>Desglose por dimensión (0–100):</strong></div><div>Funcionalidad: ${score_func.toFixed(1)}</div><div>Fiabilidad: ${score_fiab.toFixed(1)}</div><div>Usabilidad: ${score_usab.toFixed(1)}</div><div>Eficiencia: ${score_efic.toFixed(1)}</div><div>Mantenibilidad: ${score_mant.toFixed(1)}</div><div>Portabilidad: ${score_port.toFixed(1)}</div><div>Seguridad: ${score_seg.toFixed(1)}</div><div>Compatibilidad: ${score_comp.toFixed(1)}</div>`;
-      document.getElementById('finalScore').textContent = final0_5.toFixed(2);
-      const interp = document.getElementById('interpretation'); let text;
-      if(final0_5 >= 4.0) text = '<span class="text-green-600 font-semibold">Excelente</span>'; else if(final0_5 >=3.0) text = '<span class="text-amber-600 font-semibold">Bueno</span>'; else if(final0_5 >=2.0) text = '<span class="text-orange-600 font-semibold">Regular</span>'; else text = '<span class="text-red-600 font-semibold">Deficiente</span>';
-      interp.innerHTML = `Interpretación: ${text}`;
+      document.getElementById('scoreText').textContent = `${final0_5.toFixed(2)} / 5`;
+      document.getElementById('scoreBar').style.width = `${(final0_5/5)*100}%`;
+      const label = document.getElementById('scoreLabel');
+      if(final0_5 >= 4.0) label.innerHTML = 'Interpretación: <strong style="color:#8ef5d6">Excelente</strong>';
+      else if(final0_5 >=3.0) label.innerHTML = 'Interpretación: <strong style="color:#fff1a8">Bueno</strong>';
+      else if(final0_5 >=2.0) label.innerHTML = 'Interpretación: <strong style="color:#ffc58f">Regular</strong>';
+      else label.innerHTML = 'Interpretación: <strong style="color:#ff9aa2">Deficiente</strong>';
 
-      // update radar chart
-      updateRadar([score_func, score_fiab, score_usab, score_efic, score_mant, score_port, score_seg, score_comp]);
+      updateBars([score_func, score_fiab, score_usab, score_efic, score_mant, score_port, score_seg, score_comp]);
 
       return { weighted, final0_5, breakdown: { funcionalidad: score_func, fiabilidad: score_fiab, usabilidad: score_usab, eficiencia: score_efic, mantenibilidad: score_mant, portabilidad: score_port, seguridad: score_seg, compatibilidad: score_comp } };
     }
 
-    // Export JSON
+    // Event listeners
+    document.getElementById('calcBtn').addEventListener('click', ()=> calculateAll());
+    document.getElementById('startBtn').addEventListener('click', ()=> { window.scrollTo({top: 200, behavior: 'smooth'}); document.getElementById('f_req').focus(); });
+    document.getElementById('resetBtn').addEventListener('click', ()=>{ document.getElementById('metricsForm').reset(); document.getElementById('resultsArea').innerHTML = 'Aún no se han calculado resultados.'; document.getElementById('scoreText').textContent = '—'; document.getElementById('scoreBar').style.width = '0%'; updateBars([0,0,0,0,0,0,0,0]); });
     document.getElementById('exportBtn').addEventListener('click', ()=>{
       const data = calculateAll();
       const payload = { metadata: { author: 'Omar Arias', institution: 'CUN', date: new Date().toISOString() }, inputs: Object.fromEntries(new FormData(document.getElementById('metricsForm')).entries()), results: data };
@@ -253,24 +343,16 @@
       const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'evaluacion_calidad_software.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     });
 
-    document.getElementById('calcBtn').addEventListener('click', ()=> calculateAll());
-    document.getElementById('resetBtn').addEventListener('click', ()=>{ document.getElementById('metricsForm').reset(); document.getElementById('resultsArea').innerHTML = '<p class="text-slate-500">Aún no se han calculado resultados.</p>'; document.getElementById('finalScore').textContent = '—'; document.getElementById('interpretation').innerHTML = ''; updateRadar([0,0,0,0,0,0,0,0]); });
-
-    // Radar chart setup
-    const ctx = document.getElementById('radarChart').getContext('2d');
-    let radarChart = new Chart(ctx, {
-      type: 'radar',
-      data: {
-        labels: ['Funcionalidad','Fiabilidad','Usabilidad','Eficiencia','Mantenibilidad','Portabilidad','Seguridad','Compatibilidad'],
-        datasets: [{ label: 'Puntuación (0–100)', data: [0,0,0,0,0,0,0,0], fill: true, tension: 0.3 }]
-      },
-      options: { scales: { r: { suggestedMin: 0, suggestedMax: 100, ticks: { stepSize: 20 } } }, plugins: { legend: { display: false } } }
+    document.getElementById('sampleBtn').addEventListener('click', ()=>{
+      document.getElementById('f_req').value = 90; document.getElementById('f_tests').value = 92; document.getElementById('r_faults').value = 2; document.getElementById('r_mttr').value = 1.2;
+      document.getElementById('u_sus').value = 78; document.getElementById('u_time').value = 35; document.getElementById('e_resp').value = 450; document.getElementById('e_res').value = 80;
+      document.getElementById('m_cov').value = 65; document.getElementById('m_cyc').value = 3.2; document.getElementById('p_plat').value = 80; document.getElementById('p_deploy').value = 85;
+      document.getElementById('s_vuln').value = 0; document.getElementById('s_check').value = 80; document.getElementById('c_api').value = 95; document.getElementById('c_int').value = 90;
+      calculateAll();
     });
 
-    function updateRadar(values){ radarChart.data.datasets[0].data = values; radarChart.update(); }
-
     // Auto-calc on load
-    window.addEventListener('DOMContentLoaded', ()=> calculateAll());
+    window.addEventListener('DOMContentLoaded', ()=>{ document.getElementById('sampleBtn').click(); });
   </script>
 </body>
 </html>
