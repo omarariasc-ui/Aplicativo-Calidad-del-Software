@@ -1,453 +1,220 @@
-<!doctype html>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Evaluación de Calidad de Software</title>
-  <meta name="description" content="Aplicativo interactivo para evaluar la calidad del software en proyectos educativos.">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#071026;--card:#0f1724;--muted:#99a7b8;--accent1:#06b6d4;--accent2:#7c3aed}
-    *{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    body{background:radial-gradient(ellipse at 10% 10%, rgba(6,182,212,0.03), transparent 10%), linear-gradient(180deg,var(--bg) 0%, #061021 100%); color:#e6eef8; margin:0}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.6);}
-    .glass{backdrop-filter: blur(6px);}
-    .metric-input{width:100%; background:transparent; border:1px solid rgba(255,255,255,0.06); padding:.6rem; border-radius:8px; color:#e6eef8}
-    .small-muted{color:var(--muted)}
-    .btn{transition:transform .12s ease, box-shadow .12s ease}
-    .btn:active{transform:translateY(1px)}
-    .progress-bg{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:999px}
-    .focus-ring:focus{outline:2px solid rgba(6,182,212,0.18); outline-offset:2px}
-    .fade-up{opacity:0; transform:translateY(10px); animation:fadeUp .6s forwards}
-    @keyframes fadeUp{to{opacity:1; transform:none}}
-    pre{white-space:pre-wrap}
-    iframe{border-radius:8px}
-    .video-wrap{position:relative;padding-top:56.25%;overflow:hidden}
-    .video-wrap iframe{position:absolute;left:0;top:0;width:100%;height:100%}
-    .title-accent{background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .section-title{color:transparent; background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text; background-clip:text}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación de Calidad de Software</title>
+<style>
+  :root {
+    --primary-color: #0d6efd;
+    --bg-gradient: linear-gradient(135deg, #1e1e2f 0%, #2a2a3d 50%, #3b3b4f 100%);
+    --text-color: #ffffff;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--text-color);
+    background: var(--bg-gradient);
+    scroll-behavior: smooth;
+  }
+  header {
+    text-align: center;
+    padding: 50px 20px;
+    background: rgba(0,0,0,0.3);
+  }
+  header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+  }
+  section {
+    padding: 60px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  h2 {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(13,110,253,0.5);
+    text-align: center;
+  }
+  p {
+    line-height: 1.7;
+    margin-top: 20px;
+  }
+  iframe {
+    display: block;
+    margin: 25px auto;
+    width: 80%;
+    height: 360px;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 0 20px rgba(13,110,253,0.4);
+  }
+  .control-section {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 30px;
+    text-align: center;
+  }
+  label {
+    display: block;
+    margin: 15px 0 5px;
+    font-weight: bold;
+  }
+  input[type=number] {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2b2b3b;
+    color: white;
+  }
+  button {
+    background: linear-gradient(90deg, #0d6efd, #2a93ff);
+    border: none;
+    padding: 12px 25px;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(13,110,253,0.6);
+  }
+  #resultado {
+    margin-top: 25px;
+    font-size: 1.2rem;
+    color: #0d6efd;
+  }
+  canvas {
+    display: block;
+    margin: 40px auto;
+    max-width: 700px;
+  }
+  footer {
+    text-align: center;
+    padding: 40px;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+</style>
 </head>
 <body>
-  <header aria-label="Navegación principal" class="sticky top-4 z-40">
-    <div class="container mx-auto px-6">
-      <div class="flex items-center justify-between py-4">
-        <div class="flex items-center gap-4">
-          <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center shadow-lg" aria-hidden="true"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <h1 class="text-lg font-semibold title-accent">Iniciar evaluación</h1>
-        </div>
-        <nav class="hidden md:flex gap-4 text-sm small-muted" role="navigation" aria-label="Secciones del sitio">
-          <a href="#inicio" class="hover:text-white">Inicio</a>
-          <a href="#acerca" class="hover:text-white">Acerca</a>
-          <a href="#normas" class="hover:text-white">Normas</a>
-          <a href="#modelos" class="hover:text-white">Modelos</a>
-          <a href="#estandares" class="hover:text-white">Estándares</a>
-          <a href="#codigo" class="hover:text-white">Código</a>
-          <a href="#pruebas" class="hover:text-white">Pruebas</a>
-          <a href="#conclusiones" class="hover:text-white">Conclusiones</a>
-          <a href="#recomendaciones" class="hover:text-white">Recomend.</a>
-        </nav>
-      </div>
-    </div>
-  </header>
 
-  <main class="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+<header>
+  <h1>Evaluación de Calidad de Software</h1>
+  <p>Este aplicativo web permite comprender qué es la calidad de software y cómo aplicarla en proyectos de entornos educativos y ambientes reales, resaltando los beneficios de las buenas prácticas de desarrollo.</p>
+</header>
 
-    <!-- Welcome / hero -->
-    <section id="inicio" class="lg:col-span-12 card p-8 glass fade-up" role="region" aria-labelledby="hero-title">
-      <div class="md:flex md:items-center md:justify-between gap-6">
-        <div>
-          <h2 id="hero-title" class="text-2xl font-bold section-title">La calidad del software como principio profesional</h2>
-          <p class="small-muted mt-3 max-w-4xl">La calidad del software es el conjunto de atributos técnicos, funcionales y no funcionales que determinan la capacidad de una solución para cumplir con los objetivos de sus usuarios y sus requerimientos. A nivel profesional, la calidad implica procesos replicables, pruebas sistemáticas y gobernanza técnica que aseguran confiabilidad, rendimiento, seguridad y facilidad de mantenimiento.</p>
-          <p class="small-muted mt-3 max-w-4xl">En contextos educativos, la calidad del software adquiere una dimensión adicional: las aplicaciones deben ser accesibles y pedagógicamente efectivas para diferentes perfiles de estudiantes, permitiendo prácticas de evaluación y aprendizaje confiables. En entornos reales de producción, la calidad reduce riesgos operativos, protege datos sensibles y mejora la experiencia del usuario final.</p>
-          <p class="small-muted mt-3 max-w-4xl">Este aplicativo ofrece una herramienta práctica para cuantificar la calidad, comparar alternativas y priorizar mejoras en proyectos educativos — contemplando tanto aspectos pedagógicos como técnicos.</p>
-          <div class="mt-4 flex gap-3">
-            <button id="startBtn" class="btn bg-gradient-to-r from-cyan-400 to-purple-600 px-4 py-2 rounded text-sm font-medium text-black focus-ring">Iniciar evaluación</button>
-            <button id="learnMoreBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm text-white focus-ring">Ver modelo</button>
-          </div>
-        </div>
-        <div class="mt-6 md:mt-0 md:w-1/3">
-          <div class="p-4 card">
-            <h4 class="font-semibold title-accent">Beneficios clave</h4>
-            <ul class="mt-2 text-sm small-muted">
-              <li><strong>Fiabilidad:</strong> reduce interrupciones y protege la continuidad educativa.</li>
-              <li><strong>Usabilidad:</strong> mejora la experiencia de aprendizaje y la retención.</li>
-              <li><strong>Mantenibilidad:</strong> facilita la colaboración y la evolución del software.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+<section id="acerca">
+  <h2>Acerca del Aplicativo</h2>
+  <p>El propósito de este aplicativo es servir como herramienta interactiva para evaluar, comprender y aplicar los principios de calidad de software basados en estándares internacionales como ISO/IEC 25010. A través de sus componentes, se busca promover prácticas que garanticen la fiabilidad, eficiencia, mantenibilidad y usabilidad en proyectos reales y educativos.</p>
+</section>
 
-    <!-- About -->
-    <section id="acerca" class="lg:col-span-12 mt-4 card p-6 glass fade-up" role="region" aria-labelledby="acerca-title">
-      <h3 id="acerca-title" class="text-xl font-semibold title-accent">Acerca del aplicativo</h3>
-      <p class="small-muted mt-3">Objetivo general: proporcionar una herramienta didáctica y práctica para evaluar la calidad del software en proyectos educativos. Objetivos específicos:</p>
-      <ul class="mt-2 small-muted">
-        <li>Presentar una metodología cuantitativa basada en ISO/IEC 25010.</li>
-        <li>Permitir la evaluación rápida mediante sub-métricas medibles.</li>
-        <li>Proveer resultados exportables y accionables para mejora continua.</li>
-      </ul>
-      <p class="small-muted mt-3">Metodología: se evalúan ocho dimensiones (Funcionalidad, Fiabilidad, Usabilidad, Eficiencia, Mantenibilidad, Portabilidad, Seguridad y Compatibilidad). Cada dimensión se calcula en escala 0–100 desde sub-métricas y se combinan mediante pesos para obtener una nota 0–5.</p>
-    </section>
+<section id="normas">
+  <h2>Normas y Calidad</h2>
 
-    <!-- Controls -->
-    <aside class="lg:col-span-4 card p-6 glass fade-up" aria-labelledby="controls-title">
-      <h3 id="controls-title" class="text-lg font-semibold title-accent">Controles</h3>
-      <p class="small-muted mt-2">Acciones rápidas y accesibles por teclado.</p>
-      <div class="mt-4 flex gap-2">
-        <button id="calcBtnTop" class="btn bg-gradient-to-r from-cyan-400 to-purple-600 px-4 py-2 rounded text-sm font-medium text-black focus-ring">Calcular</button>
-        <button id="resetBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm text-white focus-ring">Restablecer</button>
-      </div>
-      <div class="mt-6">
-        <h4 class="text-sm font-medium">Nota final</h4>
-        <div class="mt-2 progress-bg p-1 rounded-lg" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0">
-          <div id="scoreBar" class="h-10 rounded-lg flex items-center px-4" style="width:0%; background:linear-gradient(90deg,var(--accent1),var(--accent2));">
-            <div id="scoreText" class="text-sm font-semibold">—</div>
-          </div>
-        </div>
-        <div id="scoreLabel" class="mt-2 small-muted">Interpretación: —</div>
-      </div>
-      <div class="mt-6">
-        <h4 class="text-sm font-medium">Exportar</h4>
-        <p class="text-xs small-muted mt-1">Descarga inputs y resultados en JSON</p>
-        <div class="mt-2">
-          <button id="exportBtn" class="btn bg-white/5 px-3 py-2 rounded text-sm focus-ring">Exportar JSON</button>
-        </div>
-      </div>
-    </aside>
+  <!-- Video oficial de normas -->
+  <iframe 
+    src="https://www.youtube.com/embed/fzTV-Ebk5Cg" 
+    title="Normas y Calidad de Software"
+    allowfullscreen
+    loading="lazy">
+  </iframe>
 
-    <!-- Form -->
-    <section class="lg:col-span-5 card p-6 glass fade-up" aria-labelledby="form-title">
-      <h3 id="form-title" class="text-lg font-semibold title-accent">Entradas: Sub-métricas</h3>
-      <p class="small-muted mt-2">Rellena las sub-métricas; los campos en % aceptan 0–100. Usa TAB para navegar entre campos.</p>
-      <form id="metricsForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <!-- inputs grouped with labels (same fields) -->
-        <div>
-          <label class="text-xs small-muted">Cobertura de requisitos (%)</label>
-          <input aria-label="Cobertura de requisitos" class="metric-input mt-1 focus-ring" id="f_req" type="number" min="0" max="100" value="90" />
-          <label class="text-xs small-muted mt-2 block">Tests funcionales pasados (%)</label>
-          <input aria-label="Tests funcionales" class="metric-input mt-1 focus-ring" id="f_tests" type="number" min="0" max="100" value="92" />
-        </div>
+  <p>Las normas de calidad de software establecen las bases para la creación de productos confiables. La ISO/IEC 25010 define características esenciales como funcionalidad, rendimiento, compatibilidad, seguridad, mantenibilidad y portabilidad. Su cumplimiento asegura uniformidad y excelencia técnica en el desarrollo.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">Fallos por 100 horas (número)</label>
-          <input aria-label="Fallos por 100 horas" class="metric-input mt-1 focus-ring" id="r_faults" type="number" min="0" value="2" />
-          <label class="text-xs small-muted mt-2 block">MTTR (horas)</label>
-          <input aria-label="MTTR" class="metric-input mt-1 focus-ring" id="r_mttr" type="number" step="0.1" min="0" value="1.2" />
-        </div>
+<section id="modelos">
+  <h2>Modelos de Calidad</h2>
+  <p>Los modelos de calidad permiten medir y gestionar el desempeño del software. Ejemplos como CMMI o McCall facilitan evaluar la madurez de los procesos y la eficiencia del ciclo de vida. Implementar modelos adecuados mejora la productividad, la documentación y la satisfacción del usuario final.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">SUS (0–100)</label>
-          <input aria-label="SUS" class="metric-input mt-1 focus-ring" id="u_sus" type="number" min="0" max="100" value="78" />
-          <label class="text-xs small-muted mt-2 block">Tiempo medio de tarea (segundos)</label>
-          <input aria-label="Tiempo de tarea" class="metric-input mt-1 focus-ring" id="u_time" type="number" min="0" value="35" />
-        </div>
+<section id="estandares">
+  <h2>Estándares y Código</h2>
+  <p>Los estándares de codificación promueven la uniformidad, legibilidad y mantenibilidad del software. Buenas prácticas como nombrado coherente, modularidad y control de versiones reducen errores y facilitan la colaboración en equipo, incrementando la calidad y seguridad del código fuente.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">Tiempo respuesta medio (ms)</label>
-          <input aria-label="Tiempo de respuesta" class="metric-input mt-1 focus-ring" id="e_resp" type="number" min="0" value="450" />
-          <label class="text-xs small-muted mt-2 block">Uso recursos (0–100)</label>
-          <input aria-label="Uso de recursos" class="metric-input mt-1 focus-ring" id="e_res" type="number" min="0" max="100" value="80" />
-        </div>
+<section id="pruebas">
+  <h2>Pruebas y Evaluación</h2>
+  <p>Las pruebas y la evaluación verifican que el software cumpla con los requisitos establecidos. Involucran pruebas unitarias, de integración, de rendimiento y de aceptación. Una evaluación cuantitativa permite identificar áreas de mejora y elevar la confianza del producto final.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">Cobertura unit tests (%)</label>
-          <input aria-label="Cobertura unit tests" class="metric-input mt-1 focus-ring" id="m_cov" type="number" min="0" max="100" value="65" />
-          <label class="text-xs small-muted mt-2 block">Complejidad ciclomática media</label>
-          <input aria-label="Complejidad ciclomática" class="metric-input mt-1 focus-ring" id="m_cyc" type="number" step="0.1" min="0" value="3.2" />
-        </div>
+<section id="control">
+  <h2>Controles y Evaluación</h2>
+  <div class="control-section">
+    <p>Asigna una puntuación de 0 a 5 a cada componente para evaluar la calidad del software.</p>
+    <label>Normas:</label><input type="number" id="normasInput" min="0" max="5">
+    <label>Modelos:</label><input type="number" id="modelosInput" min="0" max="5">
+    <label>Estándares:</label><input type="number" id="estandaresInput" min="0" max="5">
+    <label>Código:</label><input type="number" id="codigoInput" min="0" max="5">
+    <label>Pruebas:</label><input type="number" id="pruebasInput" min="0" max="5">
+    <button onclick="calcular()">Calcular</button>
+    <div id="resultado"></div>
+    <canvas id="grafico"></canvas>
+  </div>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">Plataformas soportadas (%)</label>
-          <input aria-label="Plataformas soportadas" class="metric-input mt-1 focus-ring" id="p_plat" type="number" min="0" max="100" value="80" />
-          <label class="text-xs small-muted mt-2 block">Facilidad despliegue (0–100)</label>
-          <input aria-label="Facilidad despliegue" class="metric-input mt-1 focus-ring" id="p_deploy" type="number" min="0" max="100" value="85" />
-        </div>
+<section id="conclusiones">
+  <h2>Conclusiones</h2>
+  <p>La calidad del software no depende únicamente del código, sino de una estrategia integral que abarque normas, modelos, estándares y pruebas. Su aplicación constante mejora la sostenibilidad de los proyectos, la satisfacción de los usuarios y la competitividad tecnológica de las organizaciones.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">Vulnerabilidades críticas (número)</label>
-          <input aria-label="Vulnerabilidades criticas" class="metric-input mt-1 focus-ring" id="s_vuln" type="number" min="0" value="0" />
-          <label class="text-xs small-muted mt-2 block">Checklist implementado (%)</label>
-          <input aria-label="Checklist de seguridad" class="metric-input mt-1 focus-ring" id="s_check" type="number" min="0" max="100" value="80" />
-        </div>
+<section id="recomendaciones">
+  <h2>Recomendaciones</h2>
+  <p>Adoptar estándares internacionales, capacitar al equipo de desarrollo y usar métricas objetivas son claves para garantizar la mejora continua. Se recomienda incorporar revisiones periódicas y herramientas automatizadas de control de calidad dentro del ciclo de vida del software.</p>
+</section>
 
-        <div>
-          <label class="text-xs small-muted">APIs conformes (%)</label>
-          <input aria-label="APIs conformes" class="metric-input mt-1 focus-ring" id="c_api" type="number" min="0" max="100" value="95" />
-          <label class="text-xs small-muted mt-2 block">Tests integración (%)</label>
-          <input aria-label="Tests integracion" class="metric-input mt-1 focus-ring" id="c_int" type="number" min="0" max="100" value="90" />
-        </div>
-      </form>
+<footer>
+  <p>© 2025 Aplicativo Evaluación de Calidad de Software | Proyecto académico CUN</p>
+</footer>
 
-      <div class="mt-4 flex gap-2">
-        <button id="sampleBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm focus-ring">Cargar ejemplo</button>
-      </div>
-    </section>
-
-    <!-- Visualization -->
-    <aside class="lg:col-span-3 card p-6 glass fade-up" aria-labelledby="vis-title">
-      <h3 id="vis-title" class="text-lg font-semibold title-accent">Visualización</h3>
-      <p class="small-muted mt-2">Gráfico de barras horizontal que muestra el puntaje por dimensión.</p>
-      <div class="mt-4">
-        <canvas id="barChart" height="300" aria-label="Gráfico de barras de puntajes por dimensión" role="img"></canvas>
-      </div>
-      <div class="mt-4" id="resultsArea" aria-live="polite">Aún no se han calculado resultados.</div>
-    </aside>
-
-    <!-- Sections expanded with robust content -->
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="normas">
-      <h3 class="text-xl font-semibold title-accent">Normas</h3>
-      <p class="small-muted mt-2">Las normas internacionales definen buenas prácticas y criterios técnicos que orientan el diseño, implementación y evaluación del software. Para este aplicativo se destacan:</p>
-      <ul class="mt-3 small-muted">
-        <li><strong>ISO/IEC 25010</strong>: establece las características de calidad del producto software (funcionalidad, fiabilidad, usabilidad, eficiencia, mantenibilidad, portabilidad, seguridad e interoperabilidad). Estas dimensiones son la base del modelo cuantitativo usado en la herramienta.</li>
-        <li><strong>ISO/IEC 12207</strong>: proporciona un marco para los procesos del ciclo de vida del software, útil para estructurar actividades de desarrollo y pruebas en entornos educativos y reales.</li>
-        <li><strong>ISO/IEC 27001</strong>: estándar para sistemas de gestión de seguridad de la información, relevante cuando se manejan datos de estudiantes y personal.</li>
-        <li><strong>IEEE 829</strong>: buenas prácticas para documentación de pruebas y reporte de resultados.</li>
-      </ul>
-      <p class="small-muted mt-3">Para proyectos educativos, recomendamos aplicar estas normas de manera pragmática: adaptar plantillas de pruebas, incluir requisitos de privacidad desde el diseño (privacy by design) y priorizar usabilidad para distintos perfiles de aprendizaje.</p>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="modelos">
-      <h3 class="text-xl font-semibold title-accent">Modelos de calidad</h3>
-      <p class="small-muted mt-2">El modelo del aplicativo se fundamenta en teorías clásicas y actuales de calidad de software:</p>
-      <ul class="mt-3 small-muted">
-        <li><strong>Modelo de McCall</strong>: enfocado en tres perspectivas (operacional, revisión y transición), útil para definir métricas de evaluación.</li>
-        <li><strong>Modelo de Boehm</strong>: introduce factores de calidad relacionados con utilidad y portabilidad.</li>
-        <li><strong>ISO/IEC 25010</strong>: modelo moderno que define ocho características de calidad — el que hemos adaptado y ponderado para el aplicativo.</li>
-      </ul>
-      <p class="small-muted mt-3">Cada modelo aporta un enfoque diferente; este aplicativo combina lo mejor de cada uno, convirtiendo factores en sub-métricas medibles (porcentaje de cobertura, tiempos, conteos de fallos, SUS para usabilidad, etc.).</p>
-      <div class="overflow-x-auto mt-4">
-        <table class="min-w-full text-sm" role="table" aria-label="Tabla de pesos">
-          <thead class="bg-white/6"><tr><th class="p-3 text-left">Dimensión</th><th class="p-3 text-left">Peso (%)</th><th class="p-3 text-left">Descripción breve</th></tr></thead>
-          <tbody>
-            <tr><td class="p-3">Funcionalidad</td><td class="p-3">18</td><td class="p-3">Cumplimiento de requisitos y corrección funcional.</td></tr>
-            <tr><td class="p-3">Fiabilidad</td><td class="p-3">15</td><td class="p-3">Tolerancia a fallos y recuperación.</td></tr>
-            <tr><td class="p-3">Usabilidad</td><td class="p-3">15</td><td class="p-3">Eficiencia y satisfacción del usuario en tareas.</td></tr>
-            <tr><td class="p-3">Eficiencia</td><td class="p-3">12</td><td class="p-3">Rendimiento y uso de recursos.</td></tr>
-            <tr><td class="p-3">Mantenibilidad</td><td class="p-3">10</td><td class="p-3">Facilidad para corregir y extender el software.</td></tr>
-            <tr><td class="p-3">Portabilidad</td><td class="p-3">8</td><td class="p-3">Adaptabilidad a distintos entornos.</td></tr>
-            <tr><td class="p-3">Seguridad</td><td class="p-3">12</td><td class="p-3">Protección frente a vulnerabilidades y control de acceso.</td></tr>
-            <tr><td class="p-3">Compatibilidad</td><td class="p-3">10</td><td class="p-3">Interoperabilidad con otros sistemas y APIs.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="estandares">
-      <h3 class="text-xl font-semibold title-accent">Estándares y buenas prácticas</h3>
-      <p class="small-muted mt-2">Adoptar estándares y prácticas consistentes reduce deuda técnica y riesgos. Recomendaciones aplicables:</p>
-      <ul class="mt-3 small-muted">
-        <li><strong>Control de calidad de código:</strong> ESLint + Prettier (JavaScript), Pylint/Black (Python).</li>
-        <li><strong>Seguridad:</strong> OWASP Top 10 y dependencia-check en CI.</li>
-        <li><strong>DevOps:</strong> GitFlow, pipelines CI/CD (GitHub Actions) con pasos de test y despliegue automatizado.</li>
-        <li><strong>Documentación:</strong> plantillas de pruebas (IEEE 829), documentación de API y guías de contribución.</li>
-      </ul>
-      <p class="small-muted mt-3">En entornos educativos, estas prácticas facilitan evaluación reproducible y permiten que estudiantes aprendan procesos profesionales desde el inicio.</p>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="codigo">
-      <h3 class="text-xl font-semibold title-accent">Código y programación</h3>
-      <p class="small-muted mt-2">Buenas prácticas de programación que impactan directamente en la calidad:</p>
-      <ul class="mt-3 small-muted">
-        <li>Escribir código modular y con responsabilidad única por módulo.</li>
-        <li>Comentarios y documentación clara; nombres de variables expresivos.</li>
-        <li>Automatizar pruebas unitarias y mantener cobertura mínima objetivo.</li>
-        <li>Revisiones de código (pull requests) y uso de linters en pipelines.</li>
-      </ul>
-      <p class="small-muted mt-3">Ejemplo breve (JS) de función simple y bien documentada:</p>
-      <pre class="bg-white/6 p-3 rounded text-sm overflow-x-auto text-white/90">/**
- * Calcula la puntuación de funcionalidad a partir de cobertura y tests.
- * @param {number} covReqPct - Cobertura de requisitos (0-100)
- * @param {number} testsPct - Porcentaje de tests funcionales pasados (0-100)
- * @returns {number} puntaje 0-100
- */
-function scoreFunc(covReqPct, testsPct){
-  const cov = Math.max(0, Math.min(100, covReqPct));
-  const tests = Math.max(0, Math.min(100, testsPct));
-  return cov * 0.6 + tests * 0.4;
-}</pre>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="pruebas">
-      <h3 class="text-xl font-semibold title-accent">Pruebas y evaluación</h3>
-      <p class="small-muted mt-2">El plan de pruebas debe incluir diferentes niveles: unitarias, integración, sistema y aceptación. Para entornos educativos, añadir pruebas de usabilidad y accesibilidad es clave.</p>
-      <p class="small-muted mt-2">Recomendaciones prácticas:</p>
-      <ul class="mt-2 small-muted">
-        <li>Escribir casos de prueba automatizados para funcionalidades críticas.</li>
-        <li>Medir SUS y tiempos de tarea con usuarios reales.</li>
-        <li>Implementar pruebas de regresión en el pipeline.</li>
-      </ul>
-      <div class="overflow-x-auto mt-4">
-        <table class="min-w-full text-sm" role="table" aria-label="Resultados de prueba">
-          <thead class="bg-white/6"><tr><th class="p-3 text-left">Dimensión</th><th class="p-3">Puntaje (0–100)</th><th class="p-3">Observaciones</th></tr></thead>
-          <tbody>
-            <tr><td class="p-3">Funcionalidad</td><td class="p-3">90.8</td><td class="p-3">Alta cobertura de requisitos; pocas incidencias críticas.</td></tr>
-            <tr><td class="p-3">Fiabilidad</td><td class="p-3">60</td><td class="p-3">Necesita mejorar monitoreo y reducir MTTR.</td></tr>
-            <tr><td class="p-3">Usabilidad</td><td class="p-3">75.8</td><td class="p-3">Buen SUS; optimizar tiempos de tarea.</td></tr>
-            <tr><td class="p-3">Eficiencia</td><td class="p-3">82.5</td><td class="p-3">Tiempos de respuesta adecuados.</td></tr>
-            <tr><td class="p-3">Mantenibilidad</td><td class="p-3">70</td><td class="p-3">Cobertura de tests media; reducir complejidad ciclomática.</td></tr>
-            <tr><td class="p-3">Portabilidad</td><td class="p-3">82.5</td><td class="p-3">Despliegue automatizado y multi-plataforma.</td></tr>
-            <tr><td class="p-3">Seguridad</td><td class="p-3">92</td><td class="p-3">Sin vulnerabilidades críticas detectadas.</td></tr>
-            <tr><td class="p-3">Compatibilidad</td><td class="p-3">92.5</td><td class="p-3">APIs conformes y pruebas de integración exitosas.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="small-muted mt-3">Nota final ejemplo: <strong>4.03 / 5.00</strong></p>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="conclusiones">
-      <h3 class="text-xl font-semibold title-accent">Conclusiones</h3>
-      <p class="small-muted mt-2">La evaluación cuantitativa facilita decisiones informadas sobre priorización de tareas, inversión en pruebas y acciones formativas. En entornos educativos, implantar prácticas de calidad forma estudiantes capaces de participar en procesos profesionales reales, reduciendo la brecha entre aula y trabajo.</p>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="recomendaciones">
-      <h3 class="text-xl font-semibold title-accent">Recomendaciones</h3>
-      <ol class="list-decimal list-inside mt-2 small-muted">
-        <li>Aumentar cobertura de pruebas unitarias a &gt;80% y automatizar su ejecución en CI.</li>
-        <li>Implementar monitoreo (APM) y alertas para reducir MTTR y mejorar fiabilidad.</li>
-        <li>Realizar pruebas de usabilidad periódicas e incorporar feedback en el ciclo de desarrollo.</li>
-        <li>Integrar escaneo de dependencias y revisiones de seguridad en pipelines.</li>
-        <li>Capacitar a docentes y estudiantes en estándares y buenas prácticas de calidad.</li>
-      </ol>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="videos">
-      <h3 class="text-xl font-semibold title-accent">Videos explicativos (ejemplos)</h3>
-      <p class="small-muted mt-2">Videos incluidos como ejemplos animados; debajo de cada video hay una breve descripción del contenido para reforzar su valor formativo.</p>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div>
-          <div class="video-wrap" data-src="https://www.youtube.com/embed/rs9rJbIu0tE?autoplay=1&mute=1&rel=0"></div>
-          <h4 class="mt-2 font-semibold title-accent">Normas y calidad</h4>
-          <p class="small-muted text-sm">Resumen sobre cómo las normas ISO guían el aseguramiento de calidad en proyectos.</p>
-        </div>
-        <div>
-          <div class="video-wrap" data-src="https://www.youtube.com/embed/1k2b0b4h5KM?autoplay=1&mute=1&rel=0"></div>
-          <h4 class="mt-2 font-semibold title-accent">Modelos de calidad</h4>
-          <p class="small-muted text-sm">Explicación de modelos (McCall, Boehm, ISO/IEC 25010) y su aplicación práctica.</p>
-        </div>
-        <div>
-          <div class="video-wrap" data-src="https://www.youtube.com/embed/6m6s0zYv3Vg?autoplay=1&mute=1&rel=0"></div>
-          <h4 class="mt-2 font-semibold title-accent">Estándares y código</h4>
-          <p class="small-muted text-sm">Buenas prácticas de codificación y su impacto en mantenibilidad y seguridad.</p>
-        </div>
-        <div>
-          <div class="video-wrap" data-src="https://www.youtube.com/embed/8s9fKk3Xj2A?autoplay=1&mute=1&rel=0"></div>
-          <h4 class="mt-2 font-semibold title-accent">Pruebas y evaluación</h4>
-          <p class="small-muted text-sm">Tipos de pruebas, métricas y cómo medir el impacto en aplicaciones educativas.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="lg:col-span-12 mt-6 card p-6 glass fade-up" id="referencias">
-      <h3 class="text-xl font-semibold title-accent">Referencias</h3>
-      <ul class="small-muted mt-2">
-        <li>ISO/IEC 25010:2011. Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE).</li>
-        <li>ISO/IEC 12207:2017. Systems and software engineering — Software life cycle processes.</li>
-        <li>ISO/IEC 27001:2013. Information security management systems.</li>
-        <li>IEEE Std 829-2008. Standard for Software and System Test Documentation.</li>
-        <li>Boehm, B. (1978). Characteristics of software quality.</li>
-      </ul>
-    </section>
-
-  </main>
-
-  <footer class="text-center py-6 small-muted">© 2025 — Evaluación de Calidad de Software</footer>
-
-  <script>
-    // Model & helpers
-    const WEIGHTS = { funcionalidad:0.18, fiabilidad:0.15, usabilidad:0.15, eficiencia:0.12, mantenibilidad:0.10, portabilidad:0.08, seguridad:0.12, compatibilidad:0.10 };
-    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-    function scoreFunc(covReqPct, testsPct){ return clamp(covReqPct,0,100)*0.6 + clamp(testsPct,0,100)*0.4; }
-    function scoreReliability(faultsPer100h, mttrHours){ let faultsScore= faultsPer100h<=0?100: faultsPer100h<=1?90: faultsPer100h<=2?70: faultsPer100h<=5?30:10; let mttrScore= mttrHours<=0?100: mttrHours<=1?90: mttrHours<=2?75: mttrHours<=5?40:20; return (faultsScore*0.5 + mttrScore*0.5); }
-    function scoreUsability(sus, timeSec){ const susScore=clamp(sus,0,100); let timeScore; if(timeSec<=30) timeScore=100; else if(timeSec<=60) timeScore=50 + (60-timeSec)/30*50; else if(timeSec<=120) timeScore=Math.max(0,50 - (timeSec-60)/60*50); else timeScore=0; return susScore*0.6 + timeScore*0.4; }
-    function scoreEfficiency(respMs, resourcePct){ let respScore = respMs<=500?100: respMs<=1000?50 + (1000-respMs)/500*50: respMs<=3000? Math.max(0,50 - (respMs-1000)/2000*50):0; const resScore = clamp(resourcePct,0,100); return (respScore + resScore)/2; }
-    function scoreMaintainability(unitCovPct, cyclomatic){ const covScore = clamp(unitCovPct,0,100); let cycScore= cyclomatic<=2?100: cyclomatic<=5?100 - (cyclomatic-2)/3*40: cyclomatic<=10? Math.max(20,60 - (cyclomatic-5)/5*40):10; return (covScore*0.6 + cycScore*0.4); }
-    function scorePortability(platPct, deployPct){ return (clamp(platPct,0,100) + clamp(deployPct,0,100))/2; }
-    function scoreSecurity(vulnCount, checklistPct){ let vulnScore = vulnCount<=0?100: vulnCount===1?80: vulnCount===2?60: vulnCount<=5?20:5; return vulnScore*0.6 + clamp(checklistPct,0,100)*0.4; }
-    function scoreCompatibility(apiPct, intPct){ return (clamp(apiPct,0,100) + clamp(intPct,0,100))/2; }
-
-    // Chart setup
-    const barCtx = document.getElementById('barChart').getContext('2d');
-    const barChart = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels: ['Funcionalidad','Fiabilidad','Usabilidad','Eficiencia','Mantenibilidad','Portabilidad','Seguridad','Compatibilidad'],
-        datasets: [{ label: 'Puntaje (0–100)', data: [0,0,0,0,0,0,0,0], backgroundColor: ['#06b6d4','#7c3aed','#06b6d4','#7c3aed','#06b6d4','#7c3aed','#06b6d4','#7c3aed'] }]
-      },
-      options: { indexAxis: 'y', scales: { x: { max: 100 } }, plugins: { legend: { display: false } }, animation: { duration: 600 } }
-    });
-
-    function updateBars(values){ barChart.data.datasets[0].data = values; barChart.update(); }
-
-    function calculateAll(){
-      const f_req = Number(document.getElementById('f_req').value||0); const f_tests = Number(document.getElementById('f_tests').value||0);
-      const r_faults = Number(document.getElementById('r_faults').value||0); const r_mttr = Number(document.getElementById('r_mttr').value||0);
-      const u_sus = Number(document.getElementById('u_sus').value||0); const u_time = Number(document.getElementById('u_time').value||0);
-      const e_resp = Number(document.getElementById('e_resp').value||0); const e_res = Number(document.getElementById('e_res').value||0);
-      const m_cov = Number(document.getElementById('m_cov').value||0); const m_cyc = Number(document.getElementById('m_cyc').value||0);
-      const p_plat = Number(document.getElementById('p_plat').value||0); const p_deploy = Number(document.getElementById('p_deploy').value||0);
-      const s_vuln = Number(document.getElementById('s_vuln').value||0); const s_check = Number(document.getElementById('s_check').value||0);
-      const c_api = Number(document.getElementById('c_api').value||0); const c_int = Number(document.getElementById('c_int').value||0);
-
-      const score_func = scoreFunc(f_req,f_tests); const score_fiab = scoreReliability(r_faults,r_mttr); const score_usab = scoreUsability(u_sus,u_time);
-      const score_efic = scoreEfficiency(e_resp,e_res); const score_mant = scoreMaintainability(m_cov,m_cyc); const score_port = scorePortability(p_plat,p_deploy);
-      const score_seg = scoreSecurity(s_vuln,s_check); const score_comp = scoreCompatibility(c_api,c_int);
-
-      const weighted = score_func*WEIGHTS.funcionalidad + score_fiab*WEIGHTS.fiabilidad + score_usab*WEIGHTS.usabilidad + score_efic*WEIGHTS.eficiencia + score_mant*WEIGHTS.mantenibilidad + score_port*WEIGHTS.portabilidad + score_seg*WEIGHTS.seguridad + score_comp*WEIGHTS.compatibilidad;
-      const final0_5 = (weighted/100)*5;
-
-      document.getElementById('resultsArea').innerHTML = `<div><strong>Desglose por dimensión (0–100):</strong></div><div>Funcionalidad: ${score_func.toFixed(1)}</div><div>Fiabilidad: ${score_fiab.toFixed(1)}</div><div>Usabilidad: ${score_usab.toFixed(1)}</div><div>Eficiencia: ${score_efic.toFixed(1)}</div><div>Mantenibilidad: ${score_mant.toFixed(1)}</div><div>Portabilidad: ${score_port.toFixed(1)}</div><div>Seguridad: ${score_seg.toFixed(1)}</div><div>Compatibilidad: ${score_comp.toFixed(1)}</div>`;
-
-      document.getElementById('scoreText').textContent = `${final0_5.toFixed(2)} / 5`;
-      document.getElementById('scoreBar').style.width = `${(final0_5/5)*100}%`;
-      const label = document.getElementById('scoreLabel');
-      if(final0_5 >= 4.0) label.innerHTML = 'Interpretación: <strong style="color:#8ef5d6">Excelente</strong>';
-      else if(final0_5 >=3.0) label.innerHTML = 'Interpretación: <strong style="color:#fff1a8">Bueno</strong>';
-      else if(final0_5 >=2.0) label.innerHTML = 'Interpretación: <strong style="color:#ffc58f">Regular</strong>';
-      else label.innerHTML = 'Interpretación: <strong style="color:#ff9aa2">Deficiente</strong>';
-
-      updateBars([score_func, score_fiab, score_usab, score_efic, score_mant, score_port, score_seg, score_comp]);
-      document.getElementById('scoreBar').setAttribute('aria-valuenow', final0_5.toFixed(2));
-      return { weighted, final0_5, breakdown: { funcionalidad: score_func, fiabilidad: score_fiab, usabilidad: score_usab, eficiencia: score_efic, mantenibilidad: score_mant, portabilidad: score_port, seguridad: score_seg, compatibilidad: score_comp } };
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function calcular() {
+  const valores = [
+    parseFloat(document.getElementById("normasInput").value) || 0,
+    parseFloat(document.getElementById("modelosInput").value) || 0,
+    parseFloat(document.getElementById("estandaresInput").value) || 0,
+    parseFloat(document.getElementById("codigoInput").value) || 0,
+    parseFloat(document.getElementById("pruebasInput").value) || 0
+  ];
+  const promedio = valores.reduce((a,b)=>a+b,0)/valores.length;
+  let calificacion = "Regular";
+  if(promedio >= 4.5) calificacion = "Excelente";
+  else if(promedio >= 3.5) calificacion = "Buena";
+  else if(promedio >= 2.5) calificacion = "Aceptable";
+  else if(promedio >= 1.5) calificacion = "Deficiente";
+  else calificacion = "Insuficiente";
+  document.getElementById("resultado").innerHTML = `Puntaje promedio: <b>${promedio.toFixed(2)}</b> (${calificacion})`;
+  
+  new Chart(document.getElementById("grafico"), {
+    type: 'bar',
+    data: {
+      labels: ['Normas','Modelos','Estándares','Código','Pruebas'],
+      datasets: [{
+        label: 'Puntuación',
+        data: valores,
+        backgroundColor: 'rgba(13,110,253,0.7)',
+        borderColor: '#0d6efd',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      scales: { x: { min: 0, max: 5, ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } },
+      plugins: { legend: { labels: { color: '#fff' } } }
     }
+  });
+}
+</script>
 
-    // UI bindings
-    document.getElementById('calcBtnTop').addEventListener('click', ()=> calculateAll());
-    document.getElementById('startBtn').addEventListener('click', ()=> { window.scrollTo({top: 220, behavior: 'smooth'}); document.getElementById('f_req').focus(); });
-    document.getElementById('learnMoreBtn').addEventListener('click', ()=> { document.getElementById('modelos').scrollIntoView({behavior:'smooth'}); });
-    document.getElementById('resetBtn').addEventListener('click', ()=>{ document.getElementById('metricsForm').reset(); document.getElementById('resultsArea').innerHTML = 'Aún no se han calculado resultados.'; document.getElementById('scoreText').textContent = '—'; document.getElementById('scoreBar').style.width = '0%'; updateBars([0,0,0,0,0,0,0,0]); });
-
-    document.getElementById('exportBtn').addEventListener('click', ()=>{
-      const data = calculateAll();
-      const payload = { metadata: { date: new Date().toISOString() }, inputs: Object.fromEntries(new FormData(document.getElementById('metricsForm')).entries()), results: data };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'evaluacion_calidad_software.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('sampleBtn').addEventListener('click', ()=>{
-      const example = { f_req:90, f_tests:92, r_faults:2, r_mttr:1.2, u_sus:78, u_time:35, e_resp:450, e_res:80, m_cov:65, m_cyc:3.2, p_plat:80, p_deploy:85, s_vuln:0, s_check:80, c_api:95, c_int:90 };
-      for(const k in example) document.getElementById(k).value = example[k];
-      calculateAll();
-    });
-
-    // Lazy load videos
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const wrappers = document.querySelectorAll('.video-wrap');
-      const io = new IntersectionObserver((entries)=>{
-        entries.forEach(entry=>{
-          if(entry.isIntersecting){ const src = entry.target.getAttribute('data-src'); if(src && !entry.target.querySelector('iframe')){ const frame = document.createElement('iframe'); frame.setAttribute('src', src); frame.setAttribute('title','Video explicativo'); frame.setAttribute('allow','autoplay; encrypted-media'); frame.setAttribute('loading','lazy'); entry.target.appendChild(frame); } }
-        })
-      }, {rootMargin:'200px'});
-      wrappers.forEach(w=>io.observe(w));
-
-      // initial sample
-      document.getElementById('sampleBtn').click();
-    });
-  </script>
 </body>
 </html>
