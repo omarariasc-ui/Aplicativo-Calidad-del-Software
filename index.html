@@ -1,21 +1,327 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aplicativo Calidad de Software - Omar Arias</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script defer src="app.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aplicativo - Calidad del Software (Omar Arias, CUN)</title>
+  <meta name="description" content="Aplicativo interactivo para evaluar la calidad de software. Modelo basado en ISO/IEC 25010.">
+  <!-- Tailwind via CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Small custom styles */
+    .card { background: white; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+    .metric-input { width: 100%; }
+    pre { white-space: pre-wrap; }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen">
-<header class="max-w-4xl mx-auto p-6">
-<h1 class="text-3xl font-bold mb-2">Aplicativo: Calidad de Software — Guía educativa</h1>
-<p class="text-gray-700">Explicación, modelo de evaluación métrico, ejemplos de pruebas y recomendaciones.</p>
-</header>
-<main id="app" class="max-w-4xl mx-auto p-6 grid gap-6"></main>
-<footer class="text-gray-600 text-sm text-center py-6">
-Elaborado por: Omar Arias
-</footer>
+<body class="bg-slate-50 text-slate-800 leading-relaxed">
+  <header class="bg-white border-b py-6">
+    <div class="container mx-auto px-6 flex items-center justify-between">
+      <h1 class="text-2xl font-bold">Aplicativo: Calidad del Software</h1>
+      <div class="text-sm text-slate-600">Elaborado por <strong>Omar Arias</strong> — CUN</div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left column: description & link -->
+    <section class="lg:col-span-1 card p-6">
+      <h2 class="text-lg font-semibold mb-2">Resumen</h2>
+      <p class="text-sm text-slate-600 mb-3">Herramienta interactiva que implementa un modelo métrico para evaluar la calidad del software en 8 dimensiones basadas en ISO/IEC 25010 y calcula una nota final en la escala 0–5.</p>
+      <p class="text-sm"><strong>Link público del proyecto:</strong></p>
+      <a class="block mt-2 text-indigo-600 hover:underline" href="https://omarariasc-ui.github.io/Aplicativo-Calidad-del-Software/" target="_blank" rel="noopener">https://omarariasc-ui.github.io/Aplicativo-Calidad-del-Software/</a>
+      <hr class="my-4" />
+      <h3 class="font-semibold">Cómo usar</h3>
+      <ol class="list-decimal list-inside text-sm text-slate-600 mt-2">
+        <li>Ingrese valores para las sub-métricas (porcentajes, tiempos o conteos).</li>
+        <li>Presione <em>Calcular</em> para ver el desglose por dimensión y la nota final 0–5.</li>
+        <li>Descargue el informe o copie los resultados para su documento.</li>
+      </ol>
+      <hr class="my-4" />
+      <button id="resetBtn" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600">Restablecer valores</button>
+    </section>
+
+    <!-- Center column: inputs -->
+    <section class="lg:col-span-1 card p-6">
+      <h2 class="text-lg font-semibold mb-2">Entradas: Sub-métricas</h2>
+      <p class="text-sm text-slate-600 mb-4">Rellena los porcentajes o medidas solicitadas. Los campos en % aceptan valores entre 0 y 100.</p>
+
+      <form id="metricsForm" class="space-y-4">
+        <!-- Funcionalidad -->
+        <div>
+          <h4 class="font-medium">Funcionalidad</h4>
+          <label class="block text-xs text-slate-500">Cobertura de requisitos (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="f_req" type="number" min="0" max="100" value="90" />
+          <label class="block text-xs text-slate-500 mt-2">Tests funcionales pasados (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="f_tests" type="number" min="0" max="100" value="92" />
+        </div>
+
+        <!-- Fiabilidad -->
+        <div>
+          <h4 class="font-medium">Fiabilidad</h4>
+          <label class="block text-xs text-slate-500">Fallos por 100 horas (número)</label>
+          <input class="metric-input border rounded px-3 py-2" id="r_faults" type="number" min="0" value="2" />
+          <label class="block text-xs text-slate-500 mt-2">MTTR (horas)</label>
+          <input class="metric-input border rounded px-3 py-2" id="r_mttr" type="number" step="0.1" min="0" value="1.2" />
+        </div>
+
+        <!-- Usabilidad -->
+        <div>
+          <h4 class="font-medium">Usabilidad</h4>
+          <label class="block text-xs text-slate-500">SUS (0–100)</label>
+          <input class="metric-input border rounded px-3 py-2" id="u_sus" type="number" min="0" max="100" value="78" />
+          <label class="block text-xs text-slate-500 mt-2">Tiempo medio de tarea (segundos)</label>
+          <input class="metric-input border rounded px-3 py-2" id="u_time" type="number" min="0" value="35" />
+        </div>
+
+        <!-- Eficiencia -->
+        <div>
+          <h4 class="font-medium">Eficiencia</h4>
+          <label class="block text-xs text-slate-500">Tiempo respuesta medio (ms)</label>
+          <input class="metric-input border rounded px-3 py-2" id="e_resp" type="number" min="0" value="450" />
+          <label class="block text-xs text-slate-500 mt-2">Uso recursos (0–100)</label>
+          <input class="metric-input border rounded px-3 py-2" id="e_res" type="number" min="0" max="100" value="80" />
+        </div>
+
+        <!-- Mantenibilidad -->
+        <div>
+          <h4 class="font-medium">Mantenibilidad</h4>
+          <label class="block text-xs text-slate-500">Cobertura unit tests (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="m_cov" type="number" min="0" max="100" value="65" />
+          <label class="block text-xs text-slate-500 mt-2">Complejidad ciclomática media</label>
+          <input class="metric-input border rounded px-3 py-2" id="m_cyc" type="number" step="0.1" min="0" value="3.2" />
+        </div>
+
+        <!-- Portabilidad -->
+        <div>
+          <h4 class="font-medium">Portabilidad</h4>
+          <label class="block text-xs text-slate-500">Plataformas soportadas (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="p_plat" type="number" min="0" max="100" value="80" />
+          <label class="block text-xs text-slate-500 mt-2">Facilidad despliegue (0–100)</label>
+          <input class="metric-input border rounded px-3 py-2" id="p_deploy" type="number" min="0" max="100" value="85" />
+        </div>
+
+        <!-- Seguridad -->
+        <div>
+          <h4 class="font-medium">Seguridad</h4>
+          <label class="block text-xs text-slate-500">Vulnerabilidades críticas (número)</label>
+          <input class="metric-input border rounded px-3 py-2" id="s_vuln" type="number" min="0" value="0" />
+          <label class="block text-xs text-slate-500 mt-2">Checklist implementado (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="s_check" type="number" min="0" max="100" value="80" />
+        </div>
+
+        <!-- Compatibilidad -->
+        <div>
+          <h4 class="font-medium">Compatibilidad / Interoperabilidad</h4>
+          <label class="block text-xs text-slate-500">APIs conformes (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="c_api" type="number" min="0" max="100" value="95" />
+          <label class="block text-xs text-slate-500 mt-2">Tests integración (%)</label>
+          <input class="metric-input border rounded px-3 py-2" id="c_int" type="number" min="0" max="100" value="90" />
+        </div>
+
+        <div class="flex gap-2 mt-4">
+          <button id="calcBtn" type="button" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Calcular</button>
+          <button id="exportBtn" type="button" class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700">Exportar JSON</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Right column: results -->
+    <section class="lg:col-span-1 card p-6">
+      <h2 class="text-lg font-semibold mb-2">Resultados</h2>
+      <div id="resultsArea" class="text-sm text-slate-700 space-y-3">
+        <p class="text-slate-500">Aún no se han calculado resultados.</p>
+      </div>
+      <hr class="my-4" />
+      <h3 class="font-semibold">Nota final (0–5)</h3>
+      <div id="finalScore" class="text-4xl font-bold text-indigo-600 mt-2">—</div>
+      <div class="mt-4" id="interpretation"></div>
+    </section>
+  </main>
+
+  <footer class="text-center py-6 text-sm text-slate-500">
+    Proyecto para Corporación Unificada Nacional de Educación Superior (CUN) — Omar Arias — 2025
+  </footer>
+
+  <script>
+    // Pesos por dimensión
+    const WEIGHTS = {
+      funcionalidad: 0.18,
+      fiabilidad: 0.15,
+      usabilidad: 0.15,
+      eficiencia: 0.12,
+      mantenibilidad: 0.10,
+      portabilidad: 0.08,
+      seguridad: 0.12,
+      compatibilidad: 0.10
+    }
+
+    // Helper: clamp
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    // Map submetrics to 0-100 scores (simple linear mapping and heuristics)
+    function scoreFunc(covReqPct, testsPct){
+      const cov = clamp(covReqPct, 0, 100);
+      const t = clamp(testsPct, 0, 100);
+      const covScore = cov * 0.6; // max 60
+      const testsScore = t * 0.4; // max 40
+      return covScore + testsScore;
+    }
+
+    function scoreReliability(faultsPer100h, mttrHours){
+      // faults: 0 => 100, 1 => 90, 2 => 70, 5 => 30 (example mapping)
+      let faultsScore;
+      if(faultsPer100h <= 0) faultsScore = 100; else if(faultsPer100h <=1) faultsScore = 90; else if(faultsPer100h <=2) faultsScore = 70; else if(faultsPer100h <=5) faultsScore = 30; else faultsScore = 10;
+      // MTTR: lower is better. 0h=>100, 1h=>90, 2h=>75, 5h=>40
+      let mttrScore;
+      if(mttrHours <=0) mttrScore = 100; else if(mttrHours <=1) mttrScore = 90; else if(mttrHours <=2) mttrScore = 75; else if(mttrHours <=5) mttrScore = 40; else mttrScore = 20;
+      return (faultsScore*0.5 + mttrScore*0.5);
+    }
+
+    function scoreUsability(sus, timeSec){
+      const susScore = clamp(sus,0,100);
+      // time: lower is better. Assume target 30s -> 100, 60s ->50, 120s->0
+      let timeScore;
+      if(timeSec <= 30) timeScore = 100; else if(timeSec <=60) timeScore = 50 + (60-timeSec)/30*50; else if(timeSec <=120) timeScore = Math.max(0, 50 - (timeSec-60)/60*50); else timeScore = 0;
+      return susScore*0.6 + timeScore*0.4;
+    }
+
+    function scoreEfficiency(respMs, resourcePct){
+      // resp: faster is better. target <500ms -> 100, 1000ms->50, 3000ms->0
+      let respScore;
+      if(respMs <= 500) respScore = 100; else if(respMs <=1000) respScore = 50 + (1000-respMs)/500*50; else if(respMs <=3000) respScore = Math.max(0, 50 - (respMs-1000)/2000*50); else respScore = 0;
+      const resScore = clamp(resourcePct,0,100);
+      return (respScore + resScore)/2;
+    }
+
+    function scoreMaintainability(unitCovPct, cyclomatic){
+      const covScore = clamp(unitCovPct,0,100);
+      // cyclomatic: lower is better. target 2->100, 5->60, 10->20
+      let cycScore;
+      if(cyclomatic <=2) cycScore = 100; else if(cyclomatic <=5) cycScore = 100 - (cyclomatic-2)/3*40; else if(cyclomatic <=10) cycScore = Math.max(20, 60 - (cyclomatic-5)/5*40); else cycScore = 10;
+      return (covScore*0.6 + cycScore*0.4);
+    }
+
+    function scorePortability(platPct, deployPct){
+      return (clamp(platPct,0,100) + clamp(deployPct,0,100))/2;
+    }
+
+    function scoreSecurity(vulnCount, checklistPct){
+      // vulnCount 0 => 100, 1=>80, 2=>60, 5=>20
+      let vulnScore;
+      if(vulnCount <=0) vulnScore = 100; else if(vulnCount ===1) vulnScore = 80; else if(vulnCount ===2) vulnScore = 60; else if(vulnCount <=5) vulnScore = 20; else vulnScore = 5;
+      return vulnScore*0.6 + clamp(checklistPct,0,100)*0.4;
+    }
+
+    function scoreCompatibility(apiPct, intPct){
+      return (clamp(apiPct,0,100) + clamp(intPct,0,100))/2;
+    }
+
+    function calculateAll(){
+      // Read inputs
+      const f_req = Number(document.getElementById('f_req').value || 0);
+      const f_tests = Number(document.getElementById('f_tests').value || 0);
+      const r_faults = Number(document.getElementById('r_faults').value || 0);
+      const r_mttr = Number(document.getElementById('r_mttr').value || 0);
+      const u_sus = Number(document.getElementById('u_sus').value || 0);
+      const u_time = Number(document.getElementById('u_time').value || 0);
+      const e_resp = Number(document.getElementById('e_resp').value || 0);
+      const e_res = Number(document.getElementById('e_res').value || 0);
+      const m_cov = Number(document.getElementById('m_cov').value || 0);
+      const m_cyc = Number(document.getElementById('m_cyc').value || 0);
+      const p_plat = Number(document.getElementById('p_plat').value || 0);
+      const p_deploy = Number(document.getElementById('p_deploy').value || 0);
+      const s_vuln = Number(document.getElementById('s_vuln').value || 0);
+      const s_check = Number(document.getElementById('s_check').value || 0);
+      const c_api = Number(document.getElementById('c_api').value || 0);
+      const c_int = Number(document.getElementById('c_int').value || 0);
+
+      // Compute dimension scores
+      const score_func = scoreFunc(f_req, f_tests);
+      const score_fiab = scoreReliability(r_faults, r_mttr);
+      const score_usab = scoreUsability(u_sus, u_time);
+      const score_efic = scoreEfficiency(e_resp, e_res);
+      const score_mant = scoreMaintainability(m_cov, m_cyc);
+      const score_port = scorePortability(p_plat, p_deploy);
+      const score_seg = scoreSecurity(s_vuln, s_check);
+      const score_comp = scoreCompatibility(c_api, c_int);
+
+      // Weighted sum
+      const weighted =
+        score_func * WEIGHTS.funcionalidad +
+        score_fiab * WEIGHTS.fiabilidad +
+        score_usab * WEIGHTS.usabilidad +
+        score_efic * WEIGHTS.eficiencia +
+        score_mant * WEIGHTS.mantenibilidad +
+        score_port * WEIGHTS.portabilidad +
+        score_seg * WEIGHTS.seguridad +
+        score_comp * WEIGHTS.compatibilidad;
+
+      const final0_5 = (weighted/100)*5;
+
+      // Update UI
+      const resultsArea = document.getElementById('resultsArea');
+      resultsArea.innerHTML = `
+        <div><strong>Desglose por dimensión (0–100):</strong></div>
+        <div>Funcionalidad: ${score_func.toFixed(1)}</div>
+        <div>Fiabilidad: ${score_fiab.toFixed(1)}</div>
+        <div>Usabilidad: ${score_usab.toFixed(1)}</div>
+        <div>Eficiencia: ${score_efic.toFixed(1)}</div>
+        <div>Mantenibilidad: ${score_mant.toFixed(1)}</div>
+        <div>Portabilidad: ${score_port.toFixed(1)}</div>
+        <div>Seguridad: ${score_seg.toFixed(1)}</div>
+        <div>Compatibilidad: ${score_comp.toFixed(1)}</div>
+      `;
+
+      document.getElementById('finalScore').textContent = final0_5.toFixed(2);
+
+      const interp = document.getElementById('interpretation');
+      let text;
+      if(final0_5 >= 4.0) text = '<span class="text-green-600 font-semibold">Excelente</span>';
+      else if(final0_5 >=3.0) text = '<span class="text-amber-600 font-semibold">Bueno</span>';
+      else if(final0_5 >=2.0) text = '<span class="text-orange-600 font-semibold">Regular</span>';
+      else text = '<span class="text-red-600 font-semibold">Deficiente</span>';
+      interp.innerHTML = `Interpretación: ${text}`;
+
+      return {
+        weighted, final0_5,
+        breakdown: {
+          funcionalidad: score_func,
+          fiabilidad: score_fiab,
+          usabilidad: score_usab,
+          eficiencia: score_efic,
+          mantenibilidad: score_mant,
+          portabilidad: score_port,
+          seguridad: score_seg,
+          compatibilidad: score_comp
+        }
+      }
+    }
+
+    document.getElementById('calcBtn').addEventListener('click', () => calculateAll());
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      document.getElementById('metricsForm').reset();
+      document.getElementById('resultsArea').innerHTML = '<p class="text-slate-500">Aún no se han calculado resultados.</p>';
+      document.getElementById('finalScore').textContent = '—';
+      document.getElementById('interpretation').innerHTML = '';
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const data = calculateAll();
+      const payload = {
+        metadata: { author: 'Omar Arias', institution: 'CUN', date: new Date().toISOString() },
+        inputs: Object.fromEntries(new FormData(document.getElementById('metricsForm')).entries()),
+        results: data
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'evaluacion_calidad_software.json';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Auto-calc on load with default values
+    window.addEventListener('DOMContentLoaded', () => calculateAll());
+  </script>
 </body>
 </html>
