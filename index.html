@@ -66,7 +66,7 @@
           <p class="small-muted mt-3 max-w-4xl">En contextos educativos, la calidad del software adquiere una dimensión adicional: las aplicaciones deben ser accesibles y pedagógicamente efectivas para diferentes perfiles de estudiantes, permitiendo prácticas de evaluación y aprendizaje confiables. En entornos reales de producción, la calidad reduce riesgos operativos, protege datos sensibles y mejora la experiencia del usuario final.</p>
           <p class="small-muted mt-3 max-w-4xl">Este aplicativo ofrece una herramienta práctica para cuantificar la calidad, comparar alternativas y priorizar mejoras en proyectos educativos — contemplando tanto aspectos pedagógicos como técnicos.</p>
           <div class="mt-4 flex gap-3">
-            <button id="startBtn" class="btn bg-gradient-to-r from-cyan-400 to-purple-600 px-4 py-2 rounded text-sm font-medium text-black focus-ring">Iniciar evaluación</button>
+           
             <button id="learnMoreBtn" class="btn border border-white/6 px-4 py-2 rounded text-sm text-white focus-ring">Ver modelo</button>
           </div>
         </div>
@@ -440,7 +440,7 @@ function scoreFunc(covReqPct, testsPct){
       const wrappers = document.querySelectorAll('.video-wrap');
       const io = new IntersectionObserver((entries)=>{
         entries.forEach(entry=>{
-          if(entry.isIntersecting){ const src = entry.target.getAttribute('data-src'); if(src && !entry.target.querySelector('iframe')){ const frame = document.createElement('iframe'); frame.setAttribute('src', src); frame.setAttribute('title','Video explicativo'); frame.setAttribute('allow','autoplay; encrypted-media'); frame.setAttribute('loading','lazy'); entry.target.appendChild(frame); } }
+          if(entry.isIntersecting){ const src="https://www.youtube.com/watch?v=fzTV-Ebk5Cg"; if(src && !entry.target.querySelector('iframe')){ const frame = document.createElement('iframe'); frame.setAttribute('src', src); frame.setAttribute('title','Video explicativo'); frame.setAttribute('allow','autoplay; encrypted-media'); frame.setAttribute('loading','lazy'); entry.target.appendChild(frame); } }
         })
       }, {rootMargin:'200px'});
       wrappers.forEach(w=>io.observe(w));
@@ -451,3 +451,21 @@ function scoreFunc(covReqPct, testsPct){
   </script>
 </body>
 </html>
+/* Fondo igual al de la sección de controles */
+section h2 {
+  background-color: #0d6efd; /* el mismo color de fondo del botón Calcular */
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  margin-bottom: 25px;
+section h2 {
+  transition: all 0.4s ease-in-out;
+}
+
+section h2:hover {
+  transform: scale(1.02);
+}
+
