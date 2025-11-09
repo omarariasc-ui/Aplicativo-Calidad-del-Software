@@ -17,6 +17,7 @@
     background: var(--bg-gradient);
     scroll-behavior: smooth;
   }
+
   header {
     text-align: center;
     padding: 50px 20px;
@@ -24,35 +25,40 @@
   }
   header h1 {
     font-size: 2.5rem;
-    color: var(--primary-color);
-    margin-bottom: 15px;
+    background: linear-gradient(90deg, #0d6efd, #5bc0de, #a0d9ff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 8s ease infinite;
   }
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   section {
     padding: 60px 20px;
     max-width: 1000px;
     margin: 0 auto;
   }
+
   h2 {
-    background-color: var(--primary-color);
+    background: linear-gradient(90deg, #0d6efd, #5bc0de, #a0d9ff);
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease infinite;
     color: white;
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(13,110,253,0.5);
     text-align: center;
   }
+
   p {
     line-height: 1.7;
     margin-top: 20px;
   }
-  iframe {
-    display: block;
-    margin: 25px auto;
-    width: 80%;
-    height: 360px;
-    border-radius: 10px;
-    border: none;
-    box-shadow: 0 0 20px rgba(13,110,253,0.4);
-  }
+
   .control-section {
     background: rgba(255,255,255,0.05);
     border-radius: 12px;
@@ -60,11 +66,13 @@
     margin-top: 30px;
     text-align: center;
   }
+
   label {
     display: block;
     margin: 15px 0 5px;
     font-weight: bold;
   }
+
   input[type=number] {
     width: 60px;
     padding: 8px;
@@ -74,8 +82,11 @@
     background: #2b2b3b;
     color: white;
   }
+
   button {
-    background: linear-gradient(90deg, #0d6efd, #2a93ff);
+    background: linear-gradient(90deg, #0d6efd, #5bc0de, #a0d9ff);
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease infinite;
     border: none;
     padding: 12px 25px;
     color: white;
@@ -86,18 +97,21 @@
   }
   button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 10px rgba(13,110,253,0.6);
+    box-shadow: 0 0 15px rgba(13,110,253,0.6);
   }
+
   #resultado {
     margin-top: 25px;
     font-size: 1.2rem;
     color: #0d6efd;
   }
+
   canvas {
     display: block;
     margin: 40px auto;
     max-width: 700px;
   }
+
   footer {
     text-align: center;
     padding: 40px;
@@ -120,31 +134,26 @@
 
 <section id="normas">
   <h2>Normas y Calidad</h2>
-
-  <!-- Video oficial de normas -->
-  <iframe 
-    src="https://www.youtube.com/embed/fzTV-Ebk5Cg" 
-    title="Normas y Calidad de Software"
-    allowfullscreen
-    loading="lazy">
-  </iframe>
-
-  <p>Las normas de calidad de software establecen las bases para la creación de productos confiables. La ISO/IEC 25010 define características esenciales como funcionalidad, rendimiento, compatibilidad, seguridad, mantenibilidad y portabilidad. Su cumplimiento asegura uniformidad y excelencia técnica en el desarrollo.</p>
+  <p>Las normas de calidad de software establecen las bases para la creación de productos confiables. La ISO/IEC 25010 define características esenciales como funcionalidad, rendimiento, compatibilidad, seguridad, mantenibilidad y portabilidad. Su cumplimiento asegura uniformidad, excelencia técnica y una mayor satisfacción del usuario final.</p>
+  <p>Aplicar normas de calidad implica incorporar procesos sistemáticos, auditorías técnicas, revisiones de código y documentación estandarizada. Estos mecanismos no solo aseguran la calidad del producto, sino también la mejora continua en la organización que desarrolla el software.</p>
 </section>
 
 <section id="modelos">
   <h2>Modelos de Calidad</h2>
-  <p>Los modelos de calidad permiten medir y gestionar el desempeño del software. Ejemplos como CMMI o McCall facilitan evaluar la madurez de los procesos y la eficiencia del ciclo de vida. Implementar modelos adecuados mejora la productividad, la documentación y la satisfacción del usuario final.</p>
+  <p>Los modelos de calidad permiten medir y gestionar el desempeño del software. Ejemplos como CMMI, ISO 9001 o McCall facilitan la evaluación de la madurez de los procesos y la eficiencia del ciclo de vida del desarrollo. Su implementación garantiza que las prácticas de ingeniería se alineen con los objetivos organizacionales.</p>
+  <p>Estos modelos proporcionan una guía clara para la mejora continua, identificando áreas críticas como planificación, gestión de riesgos, comunicación y validación. Un software basado en modelos de calidad bien implementados tiende a ser más confiable, predecible y sostenible a largo plazo.</p>
 </section>
 
 <section id="estandares">
   <h2>Estándares y Código</h2>
-  <p>Los estándares de codificación promueven la uniformidad, legibilidad y mantenibilidad del software. Buenas prácticas como nombrado coherente, modularidad y control de versiones reducen errores y facilitan la colaboración en equipo, incrementando la calidad y seguridad del código fuente.</p>
+  <p>Los estándares de codificación son fundamentales para asegurar que el software sea mantenible, escalable y libre de errores. Buenas prácticas como la modularidad, el uso de control de versiones, la indentación uniforme y la documentación clara son claves para garantizar la calidad.</p>
+  <p>Además, los estándares promueven la colaboración entre equipos de desarrollo y facilitan la revisión de código. En entornos educativos, su adopción enseña disciplina técnica, mientras que en contextos profesionales fortalece la cohesión del proyecto y mejora la seguridad del producto final.</p>
 </section>
 
 <section id="pruebas">
   <h2>Pruebas y Evaluación</h2>
-  <p>Las pruebas y la evaluación verifican que el software cumpla con los requisitos establecidos. Involucran pruebas unitarias, de integración, de rendimiento y de aceptación. Una evaluación cuantitativa permite identificar áreas de mejora y elevar la confianza del producto final.</p>
+  <p>Las pruebas garantizan que el software cumpla con los requisitos y funcione correctamente bajo diversas condiciones. Existen múltiples tipos: pruebas unitarias, de integración, de sistema, de rendimiento y de aceptación, cada una diseñada para detectar errores en diferentes fases.</p>
+  <p>La evaluación de calidad complementa este proceso mediante métricas que miden confiabilidad, facilidad de uso, rendimiento y seguridad. Implementar una cultura de pruebas continuas no solo reduce fallos, sino que mejora la percepción del usuario final sobre la calidad del software entregado.</p>
 </section>
 
 <section id="control">
@@ -164,12 +173,20 @@
 
 <section id="conclusiones">
   <h2>Conclusiones</h2>
-  <p>La calidad del software no depende únicamente del código, sino de una estrategia integral que abarque normas, modelos, estándares y pruebas. Su aplicación constante mejora la sostenibilidad de los proyectos, la satisfacción de los usuarios y la competitividad tecnológica de las organizaciones.</p>
+  <p>La calidad del software es un proceso integral que combina estándares, modelos, pruebas y buenas prácticas de desarrollo. No depende solo del código, sino de un enfoque estratégico que asegure el cumplimiento de objetivos técnicos, funcionales y de satisfacción del usuario.</p>
+  <p>Su implementación en entornos educativos permite formar profesionales conscientes de la importancia de la calidad, mientras que en entornos empresariales mejora la competitividad y reduce los costos de mantenimiento a largo plazo.</p>
 </section>
 
 <section id="recomendaciones">
   <h2>Recomendaciones</h2>
-  <p>Adoptar estándares internacionales, capacitar al equipo de desarrollo y usar métricas objetivas son claves para garantizar la mejora continua. Se recomienda incorporar revisiones periódicas y herramientas automatizadas de control de calidad dentro del ciclo de vida del software.</p>
+  <p>Para alcanzar altos niveles de calidad en el desarrollo de software, se recomienda:</p>
+  <ul>
+    <li>Adoptar estándares internacionales y auditorías periódicas.</li>
+    <li>Fomentar la capacitación continua en buenas prácticas de ingeniería.</li>
+    <li>Aplicar métricas cuantitativas para evaluar resultados.</li>
+    <li>Incorporar herramientas automatizadas de control de calidad.</li>
+    <li>Promover la comunicación y retroalimentación dentro del equipo de desarrollo.</li>
+  </ul>
 </section>
 
 <footer>
